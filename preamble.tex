@@ -1,0 +1,116 @@
+\usepackage[top=0.80in, bottom=0.75in, left=0.5in, right=0.5in, footskip=0.3in, bindingoffset=0.25in]{geometry}
+
+\usepackage{graphicx}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\usepackage{fancyvrb}
+\usepackage{longtable,booktabs}
+\usepackage{csquotes}
+
+\let\footruleskip\undefined % Trick to make memoir class work with fancyhdr
+\usepackage{fancyhdr}       % http://ctan.org/pkg/fancyhdr\usepackage{fancyhdr}
+
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+
+\usepackage[unicode=true]{hyperref}
+\usepackage[normalem]{ulem}
+
+\usepackage[default]{sourcesanspro}
+% Palatino font (ppl must be installed).
+%\renewcommand*\rmdefault{ppl}
+\usepackage{bera}
+\usepackage{inconsolata}
+%\renewcommand*\ttdefault{inconsolata} %% Only if the base font of the document is to be typewriter style
+
+%\usepackage{listings}
+%\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
+
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+% Use microtype if available
+% must be loaded after fonts
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+% Page styles
+% -----------
+
+% Redefinition of the plain style:
+\fancypagestyle{plain}{%
+\fancyhf{} % clear all header and footer fields
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.0pt}
+\fancyfoot[RO]{\bfseries\large\thepage}
+% Display draft info
+\ifdraftdoc
+\fancyfoot[RE]{\bfseries\textit{Draft \today}}
+\fancyfoot[LO]{\bfseries\textit{Draft \today}}
+\fi}
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.0pt}
+%\renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{\chaptername}\space\thechapter:\space#1}{}}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{#1}{}}
+\renewcommand{\subsectionmark}[1]{\markright{#1}{}}
+\fancyhf{} % clear all header and footer fields
+\fancyhead[LE]{\bfseries\large\thepage\space\space\space\space\space\space\space\space\leftmark}
+\fancyhead[RE]{\MakeUppercase{\chaptername}\space\thechapter}
+\fancyhead[RO]{\bfseries\rightmark\space\space\space\space\space\space\space\space\large\thepage}
+% Display draft info
+\ifdraftdoc
+\fancyfoot[RE]{\bfseries\textit{Draft \today}}
+\fancyfoot[LO]{\bfseries\textit{Draft \today}}
+\fi
+
+% Footnote
+% --------
+\renewcommand{\footnoterule}{\noindent\smash{\rule[5pt]{1.0in}{0.1pt}}}
+
+% Table of contents
+% -----------------
+\hypersetup{linkcolor=black}
+\setsecnumdepth{subsection}
+\settocdepth{subsection}
+\renewcommand{\cftchapterfont}{\bfseries\large}
+\renewcommand{\cftsectionfont}{\normalsize\bfseries}
+\renewcommand{\cftsubsectionfont}{\normalsize}
+\renewcommand{\cftsectiondotsep}{\cftnodots}
+\setlength{\cftbeforesectionskip}{0.3em}
+\setlength{\cftbeforesubsectionskip}{0.08em}
+\setlength{\cftsectionindent}{0em}
+\setlength{\cftsubsectionindent}{2.1em}
+
+% Chapter style
+% -------------
+\makechapterstyle{negerns}{%
+\setlength{\beforechapskip}{0pt}
+\renewcommand*{\chapnamefont}{\raggedleft\LARGE\scshape}
+\renewcommand*{\chapnumfont}{\raggedleft\Huge}
+\renewcommand*{\printchapternonum}{%
+\vphantom{\printchaptername}%
+\vphantom{\chapnumfont 1}%
+\afterchapternum}
+\renewcommand*{\chaptitlefont}{\raggedleft\huge\bfseries\itshape\fontfamily{ptm}\selectfont}
+\renewcommand*{\printchaptertitle}[1]{%
+\vskip -\onelineskip
+\hrule\vskip\onelineskip \centering\chaptitlefont ##1\\[3ex]}
+}
+
+% Section styles
+% --------------
+\setsecheadstyle{\LARGE\bfseries\itshape\fontfamily{ptm}\selectfont}
+\setsubsecheadstyle{\Large\bfseries\itshape\fontfamily{ptm}\selectfont}
+\setsubsubsecheadstyle{\large\bfseries\itshape\fontfamily{ptm}\selectfont}
+
+%\renewcommand*{\quotation}{\fontfamily{ptm}\selectfont\itshape}
+%\renewcommand*{\quote}{\quotation}{\endquotation}
