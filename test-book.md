@@ -1,9 +1,9 @@
 ---
-title: Project Proposal
-title2: Enterprise Resource Planning Software
-subtitle: Guidelines
-client: Software Project Improvement
-client2: LTMPC
+title: From Markdown to PDF
+title2: 
+subtitle: Guide
+client:
+client2:
 author: Ricardo Maicle
 email: rmaicle@gmail.com
 version: Version 0.1.0
