@@ -1,0 +1,234 @@
+\documentclass[12pt, twoside, a4paper, titlepage, openright, draft]{memoir}
+%\documentclass[9pt, twoside, a5paper, titlepage, openany, draft]{memoir}
+\usepackage[top=0.80in, bottom=0.75in, left=0.5in, right=0.5in, footskip=0.3in, bindingoffset=0.25in]{geometry}
+\input{preamble}
+
+%\setmonofont[Scale=0.9]{Negerns Courier}
+
+\makeatletter
+\def\cleardoublepage{
+  \clearpage
+  \if@twoside
+    \ifodd
+      \c@page
+    \else
+      \hbox{}
+      %\vspace*{1.0in}
+      %\begin{center}
+      %This page intentionally contains only this sentence.
+      %\end{center}
+      %\vspace{\fill}
+      \thispagestyle{empty}
+      \newpage
+      \if@twocolumn
+        \hbox{}
+        \newpage
+      \fi
+    \fi
+  \fi
+}
+%\makeatother
+
+$if(linestretch)$
+\usepackage{setspace}
+\setstretch{$linestretch$}
+$endif$
+
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={$author$},
+            pdftitle={$title$},
+            colorlinks=true,
+            citecolor=$if(citecolor)$$citecolor$$else$blue$endif$,
+            urlcolor=$if(urlcolor)$$urlcolor$$else$blue$endif$,
+            linkcolor=$if(linkcolor)$$linkcolor$$else$magenta$endif$,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+
+$if(links-as-notes)$
+% Make links footnotes instead of hotlinks:
+\renewcommand{\href}[2]{#2\footnote{\url{#1}}}
+$endif$
+
+% avoid problems with \sout in headers with hyperref:
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+\setcounter{secnumdepth}{5}
+
+$if(verbatim-in-note)$
+\VerbatimFootnotes % allows verbatim text in footnotes
+$endif$
+
+$if(title)$
+\title{$title$$if(subtitle)$\\\vspace{0.5em}{\large $subtitle$}$endif$}
+$endif$
+$if(author)$
+\author{$for(author)$$author$$sep$ \and $endfor$}
+$endif$
+\date{$date$}
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+% Heading styles
+% --------------
+\setsecheadstyle{\LARGE\bfseries\itshape\fontfamily{ptm}\selectfont}
+\setsubsecheadstyle{\Large\bfseries\itshape\fontfamily{ptm}\selectfont}
+\setsubsubsecheadstyle{\large\bfseries\itshape\fontfamily{ptm}\selectfont}
+
+% Page styles
+% -----------
+
+% Redefinition of the plain style:
+\fancypagestyle{plain}{%
+\fancyhf{} % clear all header and footer fields
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.0pt}
+\fancyfoot[RO]{\bfseries\large\thepage}
+% Display draft info
+\ifdraftdoc
+\fancyfoot[RE]{\bfseries\textit{Draft \today}}
+\fancyfoot[LO]{\bfseries\textit{Draft \today}}
+\fi}
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.0pt}
+%\renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{\chaptername}\space\thechapter:\space#1}{}}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{#1}{}}
+\renewcommand{\subsectionmark}[1]{\markright{#1}{}}
+\fancyhf{} % clear all header and footer fields
+\fancyhead[LE]{\bfseries\large\thepage\space\space\space\space\space\space\space\space\leftmark}
+\fancyhead[RE]{\MakeUppercase{\chaptername}\space\thechapter}
+\fancyhead[RO]{\bfseries\rightmark\space\space\space\space\space\space\space\space\large\thepage}
+% Display draft info
+\ifdraftdoc
+\fancyfoot[RE]{\bfseries\textit{Draft \today}}
+\fancyfoot[LO]{\bfseries\textit{Draft \today}}
+\fi
+
+% Table of contents
+% -----------------
+\hypersetup{linkcolor=black}
+\setsecnumdepth{subsection}
+\settocdepth{subsection}
+\renewcommand{\cftchapterfont}{\bfseries\large}
+\renewcommand{\cftsectionfont}{\normalsize\bfseries}
+\renewcommand{\cftsubsectionfont}{\normalsize}
+\renewcommand{\cftsectiondotsep}{\cftnodots}
+\setlength{\cftbeforesectionskip}{0.3em}
+\setlength{\cftbeforesubsectionskip}{0.08em}
+\setlength{\cftsectionindent}{0em}
+%\setlength{\cftsubsectionindent}{2.1em}
+\setlength{\cftsubsectionindent}{2.7em}
+
+% Chapter style
+% -------------
+\makechapterstyle{negerns}{%
+  \setlength{\beforechapskip}{0pt}
+  \renewcommand*{\chapnamefont}{\raggedleft\LARGE\scshape}
+  \renewcommand*{\chapnumfont}{\raggedleft\Huge}
+  \renewcommand*{\chaptitlefont}{\raggedleft\huge\bfseries\itshape\fontfamily{ptm}\selectfont}
+  \renewcommand*{\printchapternonum}{%
+    \vphantom{\printchaptername}%
+    \vphantom{\chapnumfont 1}%
+    \afterchapternum}
+  \renewcommand*{\printchaptertitle}[1]{%
+    \vskip -\onelineskip
+    \hrule\vskip\onelineskip \centering\chaptitlefont ##1\\[3ex]}
+}
+
+\chapterstyle{negerns}
+\chapterstyle{}
+
+% Footnote
+% --------
+\renewcommand{\footnoterule}{\noindent\smash{\rule[5pt]{1.0in}{0.1pt}}}
+
+% Begin Document
+% -----------------------------------------------------------------------------
+
+\begin{document}
+
+% Front matter
+% ------------
+
+% Title
+% -----
+\ifpdf
+  \pdfbookmark{Title Page}{$title$}
+\fi
+\newlength{\centeroffset}
+\setlength{\centeroffset}{-0.5\oddsidemargin}
+\addtolength{\centeroffset}{0.5\evensidemargin}
+\thispagestyle{empty}
+\vspace*{\stretch{2}}
+\noindent\hspace*{\centeroffset}\makebox[0pt][l]{\begin{minipage}{\textwidth}
+\flushright
+{\huge\bfseries $title$
+{$if(title2)${\huge\bfseries\\\vspace{0.3em}$title2$}$endif$}
+{$if(subtitle)${\LARGE\\\vspace{0.5em}$subtitle$}$endif$}}
+\noindent\rule[-1ex]{\textwidth}{1pt}\\[3.0ex]
+\vspace{\stretch{1}}
+{\large $version$\\
+$date$\\[30ex]}
+{\Large\bfseries\itshape\fontfamily{ptm}\selectfont $author$\\}
+{\large $email$}
+\end{minipage}}
+\vspace{\stretch{2}}
+\pagebreak
+
+\frontmatter
+$if(abstract)$
+\begin{abstract}
+$abstract$
+\end{abstract}
+$endif$
+
+$for(include-before)$
+$include-before$
+$endfor$
+
+\begin{KeepFromToc} % Hide the ToC page entry in the ToC
+  \tableofcontents
+\end{KeepFromToc}
+
+%\listoftables
+%\listoffigures
+
+% Main matter
+% -----------
+
+\mainmatter
+$body$
+
+% Back matter
+% -----------
+
+\backmatter
+%\bibliography{$biblio-files$}
+%\printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
+
+$for(include-after)$
+$include-after$
+$endfor$
+
+\end{document}
