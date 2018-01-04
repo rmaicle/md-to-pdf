@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ "$1" = "--help" ]; then
+    echo "build_a4 <input> <template> <output>"
+    exit
+fi
+inputfile=${1:-"source.md"}
+template=${2:-"book_a5.tex"}
+outputfile=${3:-"output_a5.pdf"}
+
+pandoc  ${inputfile}                    \
+        --template=${template}          \
+        -f markdown+raw_tex+footnotes   \
+        -t latex                        \
+        -o ${outputfile}                \
+        --pdf-engine=xelatex            \
+        --toc                           \
+        --top-level-division=chapter
