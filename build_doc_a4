@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+build -t doc_a4.tex -o output_doc_a4.pdf
