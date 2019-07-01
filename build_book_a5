@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-./build -t book_a5.tex -o output_book_a5.pdf $*
