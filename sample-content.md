@@ -1,34 +1,3 @@
----
-title: Markdown to PDF
-subtitle: |
-    | Using Pandoc and LaTeX
-    |
-xclient: Codespheare
-author: Ricardo Maicle
-xauthor:
-  - name: Ricardo Maicle
-    email: rmaicle@gmail.com
-  - name: Author One
-    email: authorone@gmail.com
-xemail: rmaicle@gmail.com
-version: Version 0.1.0
-date: December 2017
-xdistribution: |
-    | Approved for public release; distribution is unlimited.
-    | This is an optional second line.
-    |
-copyright: Copyleft \textcopyright\space2017 Codespheare
-licenseimage: cc_by_nc_sa_40.eps
-license: CC BY-NC-SA 4.0
-licensetext: This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). You are free to copy, reproduce, distribute, display, and make adaptations of this work for non-commercial purposes provided that you give appropriate credit. To view a copy of this license, visit [http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode](http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
-licenselink: "http://creativecommons.org/licenses/by-nc-sa/4.0/](http://creativecommons.org/licenses/by-nc-sa/4.0/"
-source: The source is available at [https://www.github.com/rmaicle/mdtopdf](https://www.github.com/rmaicle/mdtopdf).
-dedication: |
-    | Dedication here.
-    | If the dedication page is not necessary, rename or delete the key from the source YAML information.
-    |
----
-
 # Introduction
 
 \epigraph{\slshape{
@@ -89,13 +58,13 @@ The definitive user's guide and complete reference manual for TeX.
 
 YAML[^YAML] Ain't Markup Language (abbreviated as YAML) is a cross-language, Unicode-based data serialization language designed to be human-friendly that works well with modern programming languages for common everyday tasks.
 
-YAML metadata 
+YAML metadata
 
 Create a two-line title by using the pipe character `|`. The YAML metadata
 should be declared exactly like the following:
 
 ~~~
-title: | 
+title: |
   | Title on First Line
   | Title on Second Line
   |
@@ -115,14 +84,27 @@ subtitle: |
   |
 ~~~
 
+Client name.
+
+~~~
+client: client name
+~~~
+
+Single author and email.
+
+~~~
+author: author name
+email: email@address.com
+~~~
+
 Multiple authors are defined like the following:
 
 ~~~
 author:
   - name: Author One
-    email: authorone@gmail.com
+    email: email@address.com
   - name: Author Two
-    email: authortwo@gmail.com
+    email: email@address.com
 ~~~
 
 [^YAML]: YAML Version 1.2 at [http://yaml.org/spec/1.2/spec.html](http://yaml.org/spec/1.2/spec.html).
@@ -143,7 +125,7 @@ The following raw TeX is the epigraph for this chapter.
     I have not failed.\\
     I've just found 10,000 ways that won't work.
 }}{\slshape{--- Thomas Edison}}
-    
+
 \noindent <Paragraph text...>
 ~~~
 
@@ -171,7 +153,7 @@ There must be a blank line after the end of the block of text.
 > Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
 > Curabitur dictum gravida mauris.
 ~~~
-    
+
 > This is a block quote.
 > Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
 > Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
@@ -189,7 +171,7 @@ block quotes. That is, block quotes can be nested:
     > > Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
     > > Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
     > > Curabitur dictum gravida mauris.
-    
+
 > This is a block quote.
 > Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
 > Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
@@ -214,7 +196,7 @@ you need five spaces after the `>` like the following:
 >         return 0;
 >     }
 ~~~
-    
+
 > This is a block quote and the following code block is indented with five
 > spaces.
 >
@@ -269,7 +251,7 @@ If a "loose" list is desired, follow each list item with a blank line.
 
 A list item may contain multiple paragraphs and other block-level content.
 However, subsequent paragraphs must be preceded by a blank line and indented
-four (4) spaces. A _code block_ may be displayed under a list item as a 
+four (4) spaces. A _code block_ may be displayed under a list item as a
 _fenced code block_ which must also be preceded by a blank line, indented
 four (4) spaces.
 
@@ -371,7 +353,7 @@ document:
 
 As (@good) illustrates, ...
 ~~~
-    
+
 (@good)  This is a good example.
 
 As (@good) illustrates, ...
@@ -391,7 +373,7 @@ Term 1
         printf("Hello world\n");
     }
     ~~~
-        
+
 : Third paragraph. Lorem ipsum dolor sit amet, consectetuer adipiscing
   elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae,
   felis. Curabitur dictum gravida mauris.
@@ -419,7 +401,7 @@ Term 1
         printf("Hello world\n");
     }
     ~~~
-        
+
 : Third paragraph...
 
 Term 2
@@ -575,7 +557,7 @@ Installed Packages are in: /var/lib/texmf/arch/installedpkgs/*.pkgs
 ~~~
 $ texconfig conf
 ~~~
-    
+
 Will output, binaries found by search $PATH, active configuration files, font map files and kpathsea variables.
 
 ## Manual Installation
@@ -599,7 +581,7 @@ DIRS are given, these are used as the directories in which to build
 ls-R. Else all directories in the search path for ls-R files
 ($TEXMFDBS) are used.
 ~~~
-    
+
 A command line program to search through these indexes is `kpsewhich`.
 Hence you can check that TeX can find a particular file by running
 
@@ -633,7 +615,7 @@ Sans serif font
 : \fontfamily{lmss}\selectfont Lorem ipsum dolor sit amet, _consectetuer adipiscing elit_. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. __Curabitur dictum gravida mauris__. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
 
 \fontfamily{\rmdefault}\selectfont
-    
+
 Typewriter font
 : current Typewriter font is Inconsolata (zi4).
 : \fontfamily{zi4}\selectfont Lorem ipsum dolor sit amet, _consectetuer adipiscing elit_. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. __Curabitur dictum gravida mauris__. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
