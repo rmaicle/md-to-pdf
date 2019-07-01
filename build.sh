@@ -32,6 +32,7 @@ popd () {
 debug_mode=0
 arg_input_dir="source"
 input_file="source.txt"
+declare -r OUTPUT_FILE_PREFIX="output"
 
 if [ "$1" = "--help" ]; then
     show_usage
@@ -163,7 +164,7 @@ for element in "${paper_sizes[@]}"; do
         template_file="${SCRIPT_DIR}/latex-templates/doc/template_doc_a4.tex"
     fi
 
-    output_file="operations-${element}.pdf"
+    output_file="${OUTPUT_FILE_PREFIX}-${element}.pdf"
 
     if [ ${debug_mode} == 1 ]; then
         echo "Template: ${template_file}"
