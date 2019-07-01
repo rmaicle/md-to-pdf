@@ -1,1 +1,5 @@
 *.pdf
+
+# Source markdown file directory
+source/**
+
