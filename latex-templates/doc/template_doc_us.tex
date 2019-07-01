@@ -1,4 +1,4 @@
-\documentclass[10pt, a4paper, titlepage, oneside, openright, final, article]{memoir}
+\documentclass[10pt, letterpaper, titlepage, oneside, openright, final, article]{memoir}
 \usepackage[top=1.0in, bottom=1.0in, left=1.0in, right=1.0in, footskip=0.4in, bindingoffset=0.7in]{geometry}
 
 \usepackage{ifxetex,ifluatex}
@@ -471,23 +471,17 @@ $endif$
 % Table of contents
 % -----------------
 \settocdepth{subsection}
-
-% Spacing before and after the section numbers
-% Ref: Memoir Class, page 153
-\cftsetindents{chapter}{0em}{1.5em}
-\cftsetindents{section}{1.5em}{2.5em}
-\cftsetindents{subsection}{4.0em}{3.5em}
-\cftsetindents{subsubsection}{7.5em}{4.5em}
-
-\setlength{\cftbeforechapterskip}{1.0em}
-\setlength{\cftbeforesectionskip}{0.3em}
-\setlength{\cftbeforesubsectionskip}{0.3em}
-\setlength{\cftbeforesubsubsectionskip}{0.3em}
-
+\setlength{\cftchapternumwidth}{2.3em}
+\setlength{\cftsectionnumwidth}{3.9em}
+\setlength{\cftsubsectionnumwidth}{5.5em}
 \renewcommand{\cftchapterfont}{\large\bfseries}
 \renewcommand{\cftsectionfont}{\large}
 \renewcommand{\cftsubsectionfont}{\large}
-\renewcommand{\cftsubsubsectionfont}{\large}
+\setlength{\cftbeforechapterskip}{1.0em}
+\setlength{\cftbeforesectionskip}{0.3em}
+\setlength{\cftbeforesubsectionskip}{0.3em}
+\setlength{\cftsectionindent}{2.3em}
+\setlength{\cftsubsectionindent}{6.3em}
 
 % Chapter style
 % -------------
@@ -674,15 +668,9 @@ $endif$
     \includegraphics[keepaspectratio=true, width=2.5cm]{cc_by_nc_sa_40.eps}\\[1.2em]
     \normalsize License: $license$\\[1.2em]
     \normalsize $licensetext$\\[1.2em]
-    $if(license_attribution)$
-        \normalsize {\bfseries Attribution}\textemdash $license_attribution$\\[1.2em]
-    $endif$
-    $if(license_translations)$
-        \normalsize {\bfseries Translations}\textemdash $license_translations$\\[1.2em]
-    $endif$
-    $if(license_adaptations)$
-        \normalsize {\bfseries Adaptationss}\textemdash $license_adaptations$\\[1.2em]
-    $endif$
+    \normalsize {\bfseries Attribution}\textemdash $license_attribution$\\[1.2em]
+    \normalsize {\bfseries Translations}\textemdash $license_translations$\\[1.2em]
+    \normalsize {\bfseries Adaptationss}\textemdash $license_adaptations$\\[1.2em]
 
     \ifxetex
         \normalsize PDF is generated using XeTeX \the\eTeXversion\eTeXrevision-\the\XeTeXversion\XeTeXrevision\space on \today.
@@ -726,6 +714,7 @@ $if(toc)$
         \hypersetup{linkcolor=$if(toccolor)$$toccolor$$else$$endif$}
     $endif$
     %\setcounter{tocdepth}{$toc-depth$}
+    \settocdepth{subsection}
     \cleardoublepage
     %\tableofcontents
     \begin{KeepFromToc} % Hide the ToC page entry in the ToC
