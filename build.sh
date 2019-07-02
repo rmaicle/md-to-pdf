@@ -10,7 +10,7 @@ function show_usage() {
     echo "Options:"
     echo "  -h          print help and exit"
     echo "  -d          debug mode"
-    echo "  -i          input directory; default is 'source' in the"
+    echo "  -i [dir]    input directory; default is 'source' in the"
     echo "                current directory"
     echo "  -o [prefix] output filename prefix; default is 'output'"
     echo "                output filename is '<prefix>-[a4|us].pdf"
