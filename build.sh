@@ -71,9 +71,9 @@ shift $(($OPTIND - 1))
 
 declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 declare -r CURRENT_DIR=$(pwd)
-cd ${arg_input_dir}
+pushd ${arg_input_dir}
 declare -r INPUT_DIR=$(pwd)
-cd "${CURRENT_DIR}"
+popd
 output_file_prefix=$(basename ${INPUT_DIR})
 if [ ! -z "${arg_prefix}" ]; then
     output_file_prefix="${arg_prefix}"
