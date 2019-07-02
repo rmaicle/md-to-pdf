@@ -9,12 +9,13 @@ function show_usage() {
     echo "  $(basename $0) [option ...]"
     echo "Options:"
     echo "  -h          print help and exit"
-    echo "  -d          debug mode"
+    echo "  -d [dir]    output directory; default is current directory"
     echo "  -i [dir]    input directory; default is 'source' in the"
     echo "                current directory"
     echo "  -o [prefix] output filename prefix; default is 'output'"
     echo "                output filename is '<prefix>-[a4|us].pdf"
     echo "  -s [a4|us]  default is 'us'"
+    echo "  -v          verbose messages"
 }
 
 # ==============================
@@ -33,6 +34,7 @@ popd () {
 
 debug_mode=0
 
+arg_output_dir=""
 arg_input_dir="source"
 arg_prefix=""
 
@@ -44,18 +46,20 @@ if [ "$1" = "--help" ]; then
     exit
 fi
 
-while getopts :hdi:o:s: OPTION; do
+while getopts :hd:i:o:s:v OPTION; do
     case $OPTION in
         h)      show_usage
                 exit
                 ;;
-        d)      debug_mode=1
+        d)      arg_output_dir="${OPTARG}"
                 ;;
         i)      arg_input_dir="${OPTARG}"
                 ;;
         o)      arg_prefix="${OPTARG}"
                 ;;
         s)      arg_size="${OPTARG}"
+                ;;
+        v)      debug_mode=1
                 ;;
         \:)     printf "argument missing from -%s option\n" ${OPTARG}
                 show_usage
@@ -71,6 +75,19 @@ shift $(($OPTIND - 1))
 
 declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 declare -r CURRENT_DIR=$(pwd)
+
+OUTPUT_DIR="${CURRENT_DIR}"
+if [ ! -z "${arg_output_dir}" ]; then
+    if [ -d "${arg_output_dir}" ]; then
+        pushd ${arg_output_dir}
+        OUTPUT_DIR=$(pwd)
+        popd
+    else
+        echo "Error: Output directory does not exist: '${arg_output_dir}'"
+        exit 1
+    fi
+fi
+
 pushd ${arg_input_dir}
 declare -r INPUT_DIR=$(pwd)
 popd
@@ -203,7 +220,7 @@ for element in "${paper_sizes[@]}"; do
 
     if [ -e "${output_file}" ]; then
         echo "Output: ${output_file}"
-        mv ${output_file} ${CURRENT_DIR}/${output_file}
+        mv ${output_file} ${OUTPUT_DIR}/${output_file}
     else
         echo "No output."
     fi
