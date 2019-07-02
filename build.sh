@@ -12,6 +12,8 @@ function show_usage() {
     echo "  -d          debug mode"
     echo "  -i          input directory; default is 'source' in the"
     echo "                current directory"
+    echo "  -o [prefix] output filename prefix; default is 'output'"
+    echo "                output filename is '<prefix>-[a4|us].pdf"
     echo "  -s [a4|us]  default is 'us'"
 }
 
@@ -30,16 +32,19 @@ popd () {
 # ==============================
 
 debug_mode=0
+
 arg_input_dir="source"
+arg_prefix=""
+
 input_file="source.txt"
-declare -r OUTPUT_FILE_PREFIX="output"
+
 
 if [ "$1" = "--help" ]; then
     show_usage
     exit
 fi
 
-while getopts :hdi:s: OPTION; do
+while getopts :hdi:o:s: OPTION; do
     case $OPTION in
         h)      show_usage
                 exit
@@ -47,6 +52,8 @@ while getopts :hdi:s: OPTION; do
         d)      debug_mode=1
                 ;;
         i)      arg_input_dir="${OPTARG}"
+                ;;
+        o)      arg_prefix="${OPTARG}"
                 ;;
         s)      arg_size="${OPTARG}"
                 ;;
@@ -67,6 +74,10 @@ declare -r CURRENT_DIR=$(pwd)
 cd ${arg_input_dir}
 declare -r INPUT_DIR=$(pwd)
 cd "${CURRENT_DIR}"
+output_file_prefix=$(basename ${INPUT_DIR})
+if [ ! -z "${arg_prefix}" ]; then
+    output_file_prefix="${arg_prefix}"
+fi
 
 if [ ${debug_mode} == 1 ]; then
     echo "Current Dir: ${CURRENT_DIR}"
@@ -164,7 +175,7 @@ for element in "${paper_sizes[@]}"; do
         template_file="${SCRIPT_DIR}/latex-templates/doc/template_doc_a4.tex"
     fi
 
-    output_file="${OUTPUT_FILE_PREFIX}-${element}.pdf"
+    output_file="${output_file_prefix}-${element}.pdf"
 
     if [ ${debug_mode} == 1 ]; then
         echo "Template: ${template_file}"
