@@ -189,6 +189,7 @@ for element in "${paper_sizes[@]}"; do
             --template="${template_file}"   \
             -f markdown+raw_tex             \
             -f markdown+fenced_code_blocks  \
+            -f markdown+fancy_lists         \
             -f markdown+footnotes           \
             -f markdown+link_attributes     \
             -f markdown+implicit_figures    \
