@@ -660,12 +660,17 @@ $endif$
 
     \vspace*{1.5em}
 
-    $if(copyright)$
-        \normalsize $copyright$\\[1.2em]
-    $endif$
     \includegraphics[keepaspectratio=true, width=2.5cm]{cc_by_nc_sa_40.eps}\\[1.2em]
-    \normalsize License: $license$\\[1.2em]
-    \normalsize $licensetext$\\[1.2em]
+    $if(copyright)$
+        \normalsize Copyright \textcopyright\space $copyright$\\[1.2em]
+    $endif$
+    $if(license_text)$
+        {\normalsize $license_text$}
+        $if(license_link)$
+            {\normalsize To view a copy of this license, visit: \url{$license_link$}.}
+        $endif$
+        \\[1.2em]
+    $endif$
     $if(license_attribution)$
         \normalsize {\bfseries Attribution}\textemdash $license_attribution$\\[1.2em]
     $endif$
@@ -680,9 +685,9 @@ $endif$
     $endif$
 
     \ifxetex
-        \normalsize PDF is generated using XeTeX \the\eTeXversion\eTeXrevision-\the\XeTeXversion\XeTeXrevision\space on \today.
+        \normalsize This PDF is generated using XeTeX \the\eTeXversion\eTeXrevision-\the\XeTeXversion\XeTeXrevision\space on \today.
     \else
-        \normalsize PDF is generated using pdfTeX \the\eTeXversion\eTeXrevision-\the\pdftexversion.\pdftexrevision\space on \today.
+        \normalsize This PDF is generated using pdfTeX \the\eTeXversion\eTeXrevision-\the\pdftexversion.\pdftexrevision\space on \today.
     \fi
 %}
 %\%end{minipage}}
