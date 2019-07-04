@@ -677,17 +677,15 @@ $endif$
     $if(license_adaptations)$
         \normalsize {\bfseries Adaptationss}\textemdash $license_adaptations$\\[1.2em]
     $endif$
+    $if(source)$
+        \normalsize $source$\\[1.2em]
+    $endif$
 
     \ifxetex
         \normalsize PDF is generated using XeTeX \the\eTeXversion\eTeXrevision-\the\XeTeXversion\XeTeXrevision\space on \today.
     \else
         \normalsize PDF is generated using pdfTeX \the\eTeXversion\eTeXrevision-\the\pdftexversion.\pdftexrevision\space on \today.
     \fi
-
-    $if(source)$
-        \\[1em]
-        \normalsize $source$
-    $endif$
 %}
 %\%end{minipage}}
 \end{flushleft}
