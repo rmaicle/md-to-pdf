@@ -8,14 +8,15 @@ function show_usage() {
     echo "Usage:"
     echo "  $(basename $0) [option ...]"
     echo "Options:"
-    echo "  -h          print help and exit"
-    echo "  -d [dir]    output directory; default is current directory"
-    echo "  -i [dir]    input directory; default is 'source' in the"
-    echo "                current directory"
-    echo "  -o [prefix] output filename prefix; default is 'output'"
-    echo "                output filename is '<prefix>-[a4|us].pdf"
-    echo "  -s [a4|us]  default is 'us'"
-    echo "  -v          verbose messages"
+    echo "  -h              print help and exit"
+    echo "  -d [dir]        output directory; default is current directory"
+    echo "  -i [dir]        input directory; default is 'source' in the"
+    echo "                    current directory"
+    echo "  -m [filepath]   additional metadata file(s), separated by semicolon."
+    echo "  -o [prefix]     output filename prefix; default is 'output'"
+    echo "                    output filename is '<prefix>-[a4|us].pdf"
+    echo "  -s [a4|us]      default is 'us'"
+    echo "  -v              verbose messages"
 }
 
 # ==============================
@@ -36,6 +37,7 @@ debug_mode=0
 
 arg_output_dir=""
 arg_input_dir="source"
+arg_meta_file=""
 arg_prefix=""
 
 input_file="source.txt"
@@ -46,7 +48,7 @@ if [ "$1" = "--help" ]; then
     exit
 fi
 
-while getopts :hd:i:o:s:v OPTION; do
+while getopts :hd:i:m:o:s:v OPTION; do
     case $OPTION in
         h)      show_usage
                 exit
@@ -54,6 +56,8 @@ while getopts :hd:i:o:s:v OPTION; do
         d)      arg_output_dir="${OPTARG}"
                 ;;
         i)      arg_input_dir="${OPTARG}"
+                ;;
+        m)      arg_meta_file="${OPTARG}"
                 ;;
         o)      arg_prefix="${OPTARG}"
                 ;;
@@ -91,6 +95,18 @@ fi
 pushd ${arg_input_dir}
 declare -r INPUT_DIR=$(pwd)
 popd
+# Copy additional metadata files into the input directory
+# Keep the filenames so we can delete them later
+meta_files=()
+if [ ! -z "${arg_meta_file}" ]; then
+    IFS=';'
+    read -r -a input_meta_files <<< "${arg_meta_file}"
+    for file in "${input_meta_files[@]}"; do
+        meta_files+=("$(basename ${file})")
+        metafile="$(cd "$(dirname "${file}" )" >/dev/null 2>&1 && pwd )/$(basename ${file})"
+        cp -f "${metafile}" "${INPUT_DIR}"
+    done
+fi
 output_file_prefix=$(basename ${INPUT_DIR})
 if [ ! -z "${arg_prefix}" ]; then
     output_file_prefix="${arg_prefix}"
@@ -133,7 +149,19 @@ for file in "${files[@]}"; do
 done
 echo "Done"
 
-readarray -t source_files <"${INPUT_DIR}/${input_file}"
+source_files=()
+temp_source_files=()
+readarray -t temp_source_files <"${INPUT_DIR}/${input_file}"
+# Remove empty entries that was read from the input file
+for file in "${temp_source_files[@]}"; do
+    if [ ! -z "${file}" ]; then
+        source_files+=("${file}")
+    fi
+done
+# Add additional meta files to source files array
+for file in "${meta_files[@]}"; do
+    source_files+=(${file})
+done
 
 echo "Checking source markdown files:"
 for file in "${source_files[@]}"; do
@@ -246,6 +274,9 @@ if [ ${debug_mode} == 0 ]; then
     echo "Cleaning up."
     for file in "${pp_files[@]}"; do
         rm -f "${file}"
+    done
+    for file in "${meta_files[@]}"; do
+        rm -f "${INPUT_DIR}/${file}"
     done
 fi
 
