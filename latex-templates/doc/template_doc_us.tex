@@ -591,16 +591,16 @@ $if(title)$
         \noindent\rule[-1ex]{\textwidth}{1pt}\\[2.8ex]
 
         {\fontsize{12pt}{22pt}\usefont{T1}{ptm}{m}{n}$version$}\\[0.05in]
-        {\fontsize{12pt}{22pt}\usefont{T1}{ptm}{m}{n}$date$}
+        {\fontsize{12pt}{22pt}\usefont{T1}{ptm}{m}{n}$date$}\\[0.05in]
 
-        $if(client)$
-            \\[0.05in]
-            {\fontsize{14pt}{22pt}\usefont{T1}{ptm}{b}{n}$client$}
-        $endif$
+        % $if(client)$
+        %     {\fontsize{14pt}{22pt}\usefont{T1}{ptm}{b}{n}$client$}
+        % $endif$
 
-        % Add a vertical fill so the author(s) is/are pushed down.
+        % Add a vertical fill so the items below are pushed down to the
+        % bottom of the page.
         % https://latex.org/forum/viewtopic.php?t=13428
-        % Push the text down by inserting \vfill or \vspace*{\fill}:
+        % Use \vfill or \vspace*{\fill}:
         \vspace*{\fill}
 
         $for(author)$
