@@ -651,14 +651,17 @@ $endif$
     $if(version)$
         \normalsize $version$\\
     $endif$
-    \vspace*{1em}
+    $if(author)$
+        % For multiple authors
+        % \normalsize by\\
+        % $for(author)$
+        %     \normalsize $author.name$\\
+        % $endfor$
 
-    \normalsize by\\
-    $for(author)$
-        $if(author.name)$
-            \normalsize $author.name$\\
-        $endif$
-    $endfor$
+        % For single author
+        \normalsize by $for(author)$$author.name$$endfor$
+        \vspace*{1em}
+    $endif$
 
     \vspace*{1.5em}
 
