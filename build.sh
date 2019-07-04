@@ -235,6 +235,7 @@ for element in "${paper_sizes[@]}"; do
             --resource-path=.:${INPUT_DIR}  \
             --template="${template_file}"   \
             -f markdown+raw_tex             \
+            -f markdown+escaped_line_breaks \
             -f markdown+fenced_code_blocks  \
             -f markdown+fancy_lists         \
             -f markdown+footnotes           \
