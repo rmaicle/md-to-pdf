@@ -79,7 +79,7 @@ shift $(($OPTIND - 1))
 
 declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 declare -r CURRENT_DIR=$(pwd)
-
+# Get the output directory's full path
 OUTPUT_DIR="${CURRENT_DIR}"
 if [ ! -z "${arg_output_dir}" ]; then
     if [ -d "${arg_output_dir}" ]; then
@@ -91,7 +91,7 @@ if [ ! -z "${arg_output_dir}" ]; then
         exit 1
     fi
 fi
-
+# Get the input directory's full path
 pushd ${arg_input_dir}
 declare -r INPUT_DIR=$(pwd)
 popd
@@ -107,6 +107,7 @@ if [ ! -z "${arg_meta_file}" ]; then
         cp -f "${metafile}" "${INPUT_DIR}"
     done
 fi
+# Output file prefix is the input directory's last path component
 output_file_prefix=$(basename ${INPUT_DIR})
 if [ ! -z "${arg_prefix}" ]; then
     output_file_prefix="${arg_prefix}"
