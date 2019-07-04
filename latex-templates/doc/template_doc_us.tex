@@ -101,12 +101,7 @@
 % Hyperlinks
 % ==========
 
-% Change color of hyperlinks in draft mode only
-\ifdraftdoc
-    \usepackage[final=false,colorlinks=true]{hyperref}
-\else
-    \usepackage[final=true,colorlinks=false]{hyperref}
-\fi
+\usepackage[colorlinks=true]{hyperref}
 \hypersetup{
     $if(title-meta)$
         pdftitle={$title-meta$},
