@@ -229,7 +229,8 @@ for element in "${paper_sizes[@]}"; do
 
     echo "Converting to PDF (${element})..."
     pandoc                                  \
-            -s ${pp_files[@]}               \
+            ${pp_files[@]}                  \
+            --standalone                    \
             --resource-path=.:${INPUT_DIR}  \
             --template="${template_file}"   \
             -f markdown+raw_tex             \
