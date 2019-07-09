@@ -4,19 +4,29 @@
 # Display script usage
 #
 function show_usage() {
-    echo "Build script for converting markdown files to PDF using LaTeX."
+    echo "Script for converting markdown files to PDF using LaTeX."
+    echo "It reads the input file source.txt in some input directory"
+    echo "reads the markdown files specified in the input file,"
+    echo "pre-process and converts them to PDF a file using the"
+    echo "specified TeX/LaTex template files."
+    echo ""
     echo "Usage:"
     echo "  $(basename $0) [option ...]"
     echo "Options:"
-    echo "  -h              print help and exit"
-    echo "  -d [dir]        output directory; default is current directory"
-    echo "  -i [dir]        input directory; default is 'source' in the"
-    echo "                    current directory"
-    echo "  -m [filepath]   additional metadata file(s), separated by semicolon."
-    echo "  -o [prefix]     output filename prefix; default is 'output'"
-    echo "                    output filename is '<prefix>-[a4|us].pdf"
-    echo "  -s [a4|us]      default is 'us'"
-    echo "  -v              verbose messages"
+    echo "  -h          print help and exit."
+    echo "  -i [dir]    input directory; default is current directory;"
+    echo "                if this script file is called from another"
+    echo "                script file, then the directory of the calling"
+    echo "                script is the current directory."
+    echo "  -td [dir]   TeX/LaTeX template base directory relative to the"
+    echo "                script directory; this is where template images"
+    echo "                must be found."
+    echo "  -tf [file]  template file; relative to the TeX/LaTeX template"
+    echo "                base directory."
+    echo "  -od [dir]   output directory; default is current directory."
+    echo "  -of [file]  output base filename; default is 'output'"
+    echo "                default output filename is '<file>.pdf."
+    echo "  -v          verbose messages."
 }
 
 # ==============================
@@ -33,141 +43,167 @@ popd () {
 
 # ==============================
 
+declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+declare -r CURRENT_DIR=$(pwd)
+
 debug_mode=0
 
-arg_output_dir=""
-arg_input_dir="source"
-arg_meta_file=""
-arg_prefix=""
-
-input_file="source.txt"
-
-
-if [ "$1" = "--help" ]; then
+if [[ "${1}" = "--help" ]] || [[ $# -eq 0 ]]; then
     show_usage
     exit
 fi
 
-while getopts :hd:i:m:o:s:v OPTION; do
-    case $OPTION in
-        h)      show_usage
-                exit
-                ;;
-        d)      arg_output_dir="${OPTARG}"
-                ;;
-        i)      arg_input_dir="${OPTARG}"
-                ;;
-        m)      arg_meta_file="${OPTARG}"
-                ;;
-        o)      arg_prefix="${OPTARG}"
-                ;;
-        s)      arg_size="${OPTARG}"
-                ;;
-        v)      debug_mode=1
-                ;;
-        \:)     printf "argument missing from -%s option\n" ${OPTARG}
-                show_usage
-                exit 2
-                ;;
-        \?)     show_usage
-                exit 2
-                ;;
-    #esac >&2
-    esac
-done
-shift $(($OPTIND - 1))
+if [[ $# -gt 0 ]] && [[ "${1}" = "-d" ]]; then
+    shift
+    debug_mode=1
+fi
 
-declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-declare -r CURRENT_DIR=$(pwd)
-# Get the output directory's full path
-OUTPUT_DIR="${CURRENT_DIR}"
-if [ ! -z "${arg_output_dir}" ]; then
-    if [ -d "${arg_output_dir}" ]; then
-        pushd ${arg_output_dir}
-        OUTPUT_DIR=$(pwd)
-        popd
-    else
-        echo "Error: Output directory does not exist: '${arg_output_dir}'"
+# Determine the full path of the specified input directory.
+# If the input directory is not specified, then it defaults to
+# the current working directory.
+
+INPUT_FILE="source.txt"
+INPUT_DIR="${CURRENT_DIR}"
+if [[ $# -gt 0 ]] && [[ "${1}" == "-i" ]]; then
+    arg_input_file="${2}"
+    shift 2
+    if [ -z "${arg_input_file}" ]; then
+        echo "Error: Input file is not specified."
         exit 1
+    else
+        if [ -e "${arg_input_file}" ]; then
+            INPUT_FILE="$(basename ${arg_input_file})"
+            arg_input_dir="$(dirname ${arg_input_file})"
+            pushd "${arg_input_dir}"
+            INPUT_DIR=$(pwd)
+            popd
+            echo "----- ${INPUT_DIR}"
+        else
+            echo "Error: Input file does not exist: ${arg_input_file}"
+            exit 1
+        fi
     fi
 fi
-# Get the input directory's full path
-pushd ${arg_input_dir}
-declare -r INPUT_DIR=$(pwd)
-popd
-# Copy additional metadata files into the input directory
-# Keep the filenames so we can delete them later
-meta_files=()
-if [ ! -z "${arg_meta_file}" ]; then
-    IFS=';'
-    read -r -a input_meta_files <<< "${arg_meta_file}"
-    for file in "${input_meta_files[@]}"; do
-        meta_files+=("$(basename ${file})")
-        metafile="$(cd "$(dirname "${file}" )" >/dev/null 2>&1 && pwd )/$(basename ${file})"
-        cp -f "${metafile}" "${INPUT_DIR}"
-    done
+
+# Determine the full path of the specified template directory.
+
+TEMPLATE_DIR="${SCRIPT_DIR}"
+if [ $# -gt 0 ]; then
+    if [[ "${1}" == "-td" ]]; then
+        arg_template_dir="${2}"
+        shift 2
+        if [ -z "${arg_template_dir}" ]; then
+            echo "Error: Template directory is not specified."
+            exit 1
+        else
+            pushd "${SCRIPT_DIR}"
+            if [ -d "${arg_template_dir}" ]; then
+                pushd "${arg_template_dir}"
+                TEMPLATE_DIR=$(pwd)
+                popd
+            else
+                echo "Current directory: $(pwd)"
+                echo "Error: Template directory does not exist: ${arg_template_dir}"
+                popd
+                exit 1
+            fi
+            popd
+        fi
+    fi
+else
+    echo "Error: Missing template directory argument."
+    exit 1
 fi
-# Output file prefix is the input directory's last path component
-output_file_prefix=$(basename ${INPUT_DIR})
-if [ ! -z "${arg_prefix}" ]; then
-    output_file_prefix="${arg_prefix}"
+
+TEMPLATE_FILE=""
+if [ $# -gt 0 ]; then
+    if [[ "${1}" == "-tf" ]]; then
+        arg_template_file="${2}"
+        shift 2
+        if [ -z "${arg_template_file}" ]; then
+            echo "Error: Template file is not specified."
+            exit 1
+        else
+            pushd "${TEMPLATE_DIR}"
+            if [ -e "${arg_template_file}" ]; then
+                TEMPLATE_FILE="${arg_template_file}"
+            else
+                echo "Error: Template file does not exist: ${arg_template_file}"
+                exit 1
+            fi
+            popd
+        fi
+    fi
+else
+    echo "Error: Missing template file argument."
+    exit 1
+fi
+
+# Determine the full path of the specified output directory.
+# If the output directory is not specified, then it defaults to
+# the current working directory.
+
+OUTPUT_DIR="${CURRENT_DIR}"
+if [[ $# -gt 0 ]] && [[ "${1}" == "-od" ]]; then
+    arg_output_dir="${2}"
+    shift 2
+    if [ ! -z "${arg_output_dir}" ]; then
+        if [ -d "${arg_output_dir}" ]; then
+            pushd "${arg_output_dir}"
+            OUTPUT_DIR=$(pwd)
+            popd
+        else
+            echo "Current directory: $(pwd)"
+            echo "Error: Output directory does not exist: ${arg_output_dir}"
+            exit 1
+        fi
+    fi
+fi
+
+OUTPUT_FILENAME="output.pdf"
+if [[ $# -gt 0 ]] && [[ "${1}" == "-of" ]]; then
+    arg_output_file="${2}"
+    shift 2
+    if [ -z "${arg_output_file}" ]; then
+        echo "Error: Output file is not specified."
+        exit 1
+    else
+        pushd "${OUTPUT_DIR}"
+        OUTPUT_FILENAME="${arg_output_file}.pdf"
+        if [ -e "${arg_output_file}" ]; then
+            echo "Notice: Output file exists: ${arg_output_file}"
+            echo "        Existing file will be overwritten."
+        fi
+        popd
+    fi
 fi
 
 if [ ${debug_mode} == 1 ]; then
-    echo "Current Dir: ${CURRENT_DIR}"
-    echo "Script Dir:  ${SCRIPT_DIR}"
-    echo "Input Dir:   ${INPUT_DIR}"
+    echo "Script Dir:    ${SCRIPT_DIR}"
+    echo "Current Dir:   ${CURRENT_DIR}"
+    echo "Input Dir:     ${INPUT_DIR}"
+    echo "Input File:    ${INPUT_FILE}"
+    echo "Output Dir:    ${OUTPUT_DIR}"
+    echo "Output File:   ${OUTPUT_FILENAME}"
+    echo "Template Dir:  ${TEMPLATE_DIR}"
+    echo "Template File: ${TEMPLATE_FILE}"
 fi
 
-if [ -z "${arg_size}" ]; then
-    arg_size="all"
-fi
-
-# The graphic file cc_by_nc_sa_40.eps is used by latex template file
-# and is placed in under the latex template base directory. Pandoc only
-# looks for latex template image files on Pandoc's "working directory".
-files=(
-    "${SCRIPT_DIR}/latex-templates/cc_by_nc_sa_40.eps"
-    "${SCRIPT_DIR}/latex-templates/doc/template_doc_us.tex"
-    "${SCRIPT_DIR}/latex-templates/doc/template_doc_a4.tex"
-    "${SCRIPT_DIR}/latex-templates/book/template_book_us.tex"
-    "${SCRIPT_DIR}/latex-templates/book/template_book_a4.tex"
-    "${INPUT_DIR}/${input_file}"
-)
-
-echo "Converting markdown files to PDF file."
-
-echo "Checking required files..."
-for file in "${files[@]}"; do
-    if [ ! -e "${file}" ]; then
-        echo "  Missing file: ${file}"
-        exit 1
-    else
-        if [ ${debug_mode} == 1 ]; then
-            echo "  Found: ${file}"
-        fi
-    fi
-done
-echo "Done"
+# Read the input file contents
 
 source_files=()
 temp_source_files=()
-readarray -t temp_source_files <"${INPUT_DIR}/${input_file}"
-# Remove empty entries that was read from the input file
+readarray -t temp_source_files <"${INPUT_DIR}/${INPUT_FILE}"
 for file in "${temp_source_files[@]}"; do
     if [ ! -z "${file}" ]; then
         source_files+=("${file}")
     fi
 done
-# Add additional meta files to source files array
-for file in "${meta_files[@]}"; do
-    source_files+=(${file})
-done
 
-echo "Checking source markdown files:"
+echo "Checking existence of markdown files:"
 for file in "${source_files[@]}"; do
     if [ ! -e "${INPUT_DIR}/${file}" ]; then
-        echo "  Missing file: ${INPUT_DIR}/${file}"
+        echo "  Missing markdown file: ${INPUT_DIR}/${file}"
         exit 1
     else
         echo "  Found: ${file}"
@@ -175,14 +211,10 @@ for file in "${source_files[@]}"; do
 done
 echo "Done"
 
-if [ $# -gt 0 ]; then
-    printf "Unknown arguments: %s\n" "$*"
-    echo   "Aborting."
-    exit 1
-fi
+# Pre-process markdown files
 
-echo "Preprocessing..."
-pushd ${INPUT_DIR}
+echo "Preprocessing markdown files..."
+pushd "${INPUT_DIR}"
 if [ ! -d "images" ]; then
     mkdir "images"
 fi
@@ -198,78 +230,51 @@ done
 popd
 echo "Done"
 
-declare -a  paper_sizes=()
+# Because Pandoc only looks for latex template image files on its
+# "working directory", we must go into the latex templates directory
+pushd "${TEMPLATE_DIR}"
 
-if [ "${arg_size}" == "a4" ]; then
-    paper_sizes+=("a4")
-elif [ "${arg_size}" == "us" ]; then
-    paper_sizes+=("us")
-elif [ "${arg_size}" == "all" ]; then
-    paper_sizes+=("a4")
-    paper_sizes+=("us")
+echo "Converting markdown files to ${OUTPUT_FILENAME}..."
+echo "Call pandoc with arguments."
+pandoc                              \
+    ${pp_files[@]}                  \
+    --standalone                    \
+    --resource-path=.:${INPUT_DIR}  \
+    --template="${TEMPLATE_FILE}"   \
+    -f markdown+raw_tex             \
+    -f markdown+escaped_line_breaks \
+    -f markdown+fenced_code_blocks  \
+    -f markdown+fancy_lists         \
+    -f markdown+footnotes           \
+    -f markdown+link_attributes     \
+    -f markdown+implicit_figures    \
+    -t latex                        \
+    -o ${OUTPUT_FILENAME}           \
+    `#--pdf-engine=pdflatex`        \
+    --pdf-engine=xelatex            \
+    --toc                           \
+    --top-level-division=chapter    \
+    --listing
+
+if [ -e "${OUTPUT_FILENAME}" ]; then
+    echo "Output: ${OUTPUT_DIR}/${OUTPUT_FILENAME}"
+    mv ${OUTPUT_FILENAME} ${OUTPUT_DIR}/${OUTPUT_FILENAME}
+else
+    echo "No output."
 fi
 
-# Because Pandoc only looks for latex template image files on its
-# "working directory", we must go into the latex templates base directory
-pushd ${SCRIPT_DIR}/latex-templates
+# Other arguments to pandoc:
+#
+#   --pdf-engine=[pdflatex | xelatex]
+#   --verbose
+#     Give verbose debugging output. Currently this only has an effect
+#     with PDF output.
+#   --log=FILE
+#     Write log messages in machine-readable JSON format to
+#     FILE. All messages above DEBUG level will be written,
+#     regardless of verbosity settings (--verbose, --quiet).
 
-for element in "${paper_sizes[@]}"; do
-    template_file=""
-    if [ "${element}" == "us" ]; then
-        template_file="${SCRIPT_DIR}/latex-templates/doc/template_doc_us.tex"
-    elif [ "${element}" == "a4" ]; then
-        template_file="${SCRIPT_DIR}/latex-templates/doc/template_doc_a4.tex"
-    fi
-
-    output_file="${output_file_prefix}-${element}.pdf"
-
-    if [ ${debug_mode} == 1 ]; then
-        echo "Template: ${template_file}"
-        echo "Output:   ${output_file}"
-    fi
-
-    echo "Converting to PDF (${element})..."
-    pandoc                                  \
-            ${pp_files[@]}                  \
-            --standalone                    \
-            --resource-path=.:${INPUT_DIR}  \
-            --template="${template_file}"   \
-            -f markdown+raw_tex             \
-            -f markdown+escaped_line_breaks \
-            -f markdown+fenced_code_blocks  \
-            -f markdown+fancy_lists         \
-            -f markdown+footnotes           \
-            -f markdown+link_attributes     \
-            -f markdown+implicit_figures    \
-            -t latex                        \
-            -o ${output_file}               \
-            `#--pdf-engine=pdflatex`        \
-            --pdf-engine=xelatex            \
-            --toc                           \
-            --top-level-division=chapter    \
-            --listing
-
-    if [ -e "${output_file}" ]; then
-        echo "Output: ${output_file}"
-        mv ${output_file} ${OUTPUT_DIR}/${output_file}
-    else
-        echo "No output."
-    fi
-
-    # Other arguments to pandoc:
-    #
-    #   --pdf-engine=[pdflatex | xelatex]
-    #   --verbose
-    #     Give verbose debugging output. Currently this only has an effect
-    #     with PDF output.
-    #   --log=FILE
-    #     Write log messages in machine-readable JSON format to
-    #     FILE. All messages above DEBUG level will be written,
-    #     regardless of verbosity settings (--verbose, --quiet).
-
-    # Use --pdf-engine=xelatex when markdown file contains Ñ character.
-
-done
+# Use --pdf-engine=xelatex when markdown file contains Ñ character.
 
 popd
 
@@ -277,9 +282,6 @@ if [ ${debug_mode} == 0 ]; then
     echo "Cleaning up."
     for file in "${pp_files[@]}"; do
         rm -f "${file}"
-    done
-    for file in "${meta_files[@]}"; do
-        rm -f "${INPUT_DIR}/${file}"
     done
 fi
 
