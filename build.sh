@@ -71,7 +71,7 @@ if [[ $# -gt 0 ]] && [[ "${1}" == "-i" ]]; then
         echo "Error: Input file is not specified."
         exit 1
     else
-        if [ -e "${arg_input_file}" ]; then
+        if [ -f "${arg_input_file}" ]; then
             INPUT_FILE="$(basename ${arg_input_file})"
             arg_input_dir="$(dirname ${arg_input_file})"
             pushd "${arg_input_dir}"
