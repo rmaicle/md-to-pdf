@@ -77,7 +77,6 @@ if [[ $# -gt 0 ]] && [[ "${1}" == "-i" ]]; then
             pushd "${arg_input_dir}"
             INPUT_DIR=$(pwd)
             popd
-            echo "----- ${INPUT_DIR}"
         else
             echo "Error: Input file does not exist: ${arg_input_file}"
             exit 1
@@ -235,7 +234,6 @@ echo "Done"
 pushd "${TEMPLATE_DIR}"
 
 echo "Converting markdown files to ${OUTPUT_FILENAME}..."
-echo "Call pandoc with arguments."
 pandoc                              \
     ${pp_files[@]}                  \
     --standalone                    \
