@@ -256,7 +256,9 @@ pandoc                              \
 
 if [ -e "${OUTPUT_FILENAME}" ]; then
     echo "Output: ${OUTPUT_DIR}/${OUTPUT_FILENAME}"
-    mv ${OUTPUT_FILENAME} ${OUTPUT_DIR}/${OUTPUT_FILENAME}
+    if [[ ! "$(pwd)" == "${OUTPUT_DIR}" ]]; then
+        mv ${OUTPUT_FILENAME} ${OUTPUT_DIR}/${OUTPUT_FILENAME}
+    fi
 else
     echo "No output."
 fi
