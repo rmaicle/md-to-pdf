@@ -79,6 +79,7 @@ if [[ $# -gt 0 ]] && [[ "${1}" == "-i" ]]; then
             popd
         else
             echo "Error: Input file does not exist: ${arg_input_file}"
+            echo "Current directory: $(pwd)"
             exit 1
         fi
     fi
@@ -101,8 +102,8 @@ if [ $# -gt 0 ]; then
                 TEMPLATE_DIR=$(pwd)
                 popd
             else
-                echo "Current directory: $(pwd)"
                 echo "Error: Template directory does not exist: ${arg_template_dir}"
+                echo "Current directory: $(pwd)"
                 popd
                 exit 1
             fi
@@ -152,8 +153,8 @@ if [[ $# -gt 0 ]] && [[ "${1}" == "-od" ]]; then
             OUTPUT_DIR=$(pwd)
             popd
         else
-            echo "Current directory: $(pwd)"
             echo "Error: Output directory does not exist: ${arg_output_dir}"
+            echo "Current directory: $(pwd)"
             exit 1
         fi
     fi
