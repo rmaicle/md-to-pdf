@@ -244,8 +244,8 @@ echo "Done"
 pushd "${TEMPLATE_DIR}"
 
 if [ ${output_latex} -eq 1 ]; then
-    echo "Creating Tex/LaTeX file ${OUTPUT_FILENAME}..."
-    rm -f ${LATEX_OUTPUT}
+    echo "Creating Tex/LaTeX file ${OUTPUT_LATEX}..."
+    rm -f ${OUTPUT_LATEX}
 
     pandoc                              \
         ${pp_files[@]}                  \
@@ -263,12 +263,12 @@ if [ ${output_latex} -eq 1 ]; then
         --toc                           \
         --top-level-division=chapter    \
         --listings                      \
-        > "${LATEX_OUTPUT}"
+        > "${OUTPUT_LATEX}"
 
-    if [ -e "${LATEX_OUTPUT}" ]; then
-        echo "Latex output: ${OUTPUT_DIR}/${LATEX_OUTPUT}"
+    if [ -e "${OUTPUT_LATEX}" ]; then
+        echo "Latex: ${OUTPUT_DIR}/${OUTPUT_LATEX}"
         if [[ ! "$(pwd)" == "${OUTPUT_DIR}" ]]; then
-            mv ${LATEX_OUTPUT} ${OUTPUT_DIR}/${LATEX_OUTPUT}
+            mv ${OUTPUT_LATEX} ${OUTPUT_DIR}/${OUTPUT_LATEX}
         fi
     fi
 fi
