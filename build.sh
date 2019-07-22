@@ -23,6 +23,7 @@ function show_usage() {
     echo "                template images must be found."
     echo "  -tf [file]  template file; relative to the TeX/LaTeX template"
     echo "                base directory."
+    echo "  -o          output Latex file."
     echo "  -od [dir]   output directory; default is current directory."
     echo "  -of [file]  output base filename; default is 'output'"
     echo "                default output filename is '<file>.pdf."
@@ -47,6 +48,7 @@ declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 &&
 declare -r CURRENT_DIR=$(pwd)
 
 debug_mode=0
+output_latex=0
 
 if [[ "${1}" = "--help" ]] || [[ $# -eq 0 ]]; then
     show_usage
@@ -139,6 +141,11 @@ else
     exit 1
 fi
 
+if [[ $# -gt 0 ]] && [[ "${1}" == "-o" ]]; then
+    shift
+    output_latex=1
+fi
+
 # Determine the full path of the specified output directory.
 # If the output directory is not specified, then it defaults to
 # the current working directory.
@@ -161,6 +168,7 @@ if [[ $# -gt 0 ]] && [[ "${1}" == "-od" ]]; then
 fi
 
 OUTPUT_FILENAME="output.pdf"
+OUTPUT_LATEX="output.tex"
 if [[ $# -gt 0 ]] && [[ "${1}" == "-of" ]]; then
     arg_output_file="${2}"
     shift 2
@@ -170,6 +178,7 @@ if [[ $# -gt 0 ]] && [[ "${1}" == "-of" ]]; then
     else
         pushd "${OUTPUT_DIR}"
         OUTPUT_FILENAME="${arg_output_file}.pdf"
+        OUTPUT_LATEX="${arg_output_file}.tex"
         if [ -e "${arg_output_file}" ]; then
             echo "Notice: Output file exists: ${arg_output_file}"
             echo "        Existing file will be overwritten."
@@ -233,6 +242,36 @@ echo "Done"
 # Because Pandoc only looks for latex template image files on its
 # "working directory", we must go into the latex templates directory
 pushd "${TEMPLATE_DIR}"
+
+if [ ${output_latex} -eq 1 ]; then
+    echo "Creating Tex/LaTeX file ${OUTPUT_FILENAME}..."
+    rm -f ${LATEX_OUTPUT}
+
+    pandoc                              \
+        ${pp_files[@]}                  \
+        --standalone                    \
+        --resource-path=.:${INPUT_DIR}  \
+        --template="${TEMPLATE_FILE}"   \
+        -f markdown+raw_tex             \
+        -f markdown+escaped_line_breaks \
+        -f markdown+fenced_code_blocks  \
+        -f markdown+fancy_lists         \
+        -f markdown+footnotes           \
+        -f markdown+link_attributes     \
+        -f markdown+implicit_figures    \
+        -t latex                        \
+        --toc                           \
+        --top-level-division=chapter    \
+        --listings                      \
+        > "${LATEX_OUTPUT}"
+
+    if [ -e "${LATEX_OUTPUT}" ]; then
+        echo "Latex output: ${OUTPUT_DIR}/${LATEX_OUTPUT}"
+        if [[ ! "$(pwd)" == "${OUTPUT_DIR}" ]]; then
+            mv ${LATEX_OUTPUT} ${OUTPUT_DIR}/${LATEX_OUTPUT}
+        fi
+    fi
+fi
 
 echo "Converting markdown files to ${OUTPUT_FILENAME}..."
 pandoc                              \
