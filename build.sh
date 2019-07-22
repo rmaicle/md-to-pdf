@@ -292,7 +292,7 @@ pandoc                              \
     --pdf-engine=xelatex            \
     --toc                           \
     --top-level-division=chapter    \
-    --listing
+    --listings
 
 if [ -e "${OUTPUT_FILENAME}" ]; then
     echo "Output: ${OUTPUT_DIR}/${OUTPUT_FILENAME}"
