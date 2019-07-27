@@ -288,8 +288,8 @@ pandoc                              \
     -f markdown+implicit_figures    \
     -t latex                        \
     -o ${OUTPUT_FILENAME}           \
-    `#--pdf-engine=pdflatex`        \
-    --pdf-engine=xelatex            \
+    --pdf-engine=pdflatex           \
+    `#--pdf-engine=xelatex`         \
     --toc                           \
     --top-level-division=chapter    \
     --listings
