@@ -64,9 +64,9 @@ declare -r CURRENT_DIR=$(pwd)
 declare -r PAPER_SIZE_USLETTER="letterpaper"
 declare -r PAPER_SIZE_A4="a4paper"
 
-declare -r FONT_SIZE_10=1
-declare -r FONT_SIZE_11=2
-declare -r FONT_SIZE_12=3
+declare -r FONT_SIZE_10=10pt
+declare -r FONT_SIZE_11=11pt
+declare -r FONT_SIZE_12=12pt
 
 debug_mode=0
 output_latex=0
@@ -384,6 +384,7 @@ if [ ${output_frontmatter_generate} == 1 ]; then
             --metadata=draft:${output_draft}            \
             --metadata=softcopy:${output_softcopy}      \
             --metadata=papersize:${output_papersize}    \
+            --metadata=fontsize:${output_font_size}     \
             ${output_show_frame}                        \
             -f markdown+blank_before_blockquote         \
             -f markdown+blank_before_header             \
@@ -438,6 +439,7 @@ if [ ${output_backmatter_generate} == 1 ]; then
             --metadata=draft:${output_draft}            \
             --metadata=softcopy:${output_softcopy}      \
             --metadata=papersize:${output_papersize}    \
+            --metadata=fontsize:${output_font_size}     \
             ${output_show_frame}                        \
             -f markdown+blank_before_blockquote         \
             -f markdown+blank_before_header             \
@@ -516,6 +518,7 @@ if [ ${output_latex} -eq 1 ]; then
         --metadata=draft:${output_draft}            \
         --metadata=softcopy:${output_softcopy}      \
         --metadata=papersize:${output_papersize}    \
+        --metadata=fontsize:${output_font_size}     \
         --metadata=lof                              \
         --metadata=lot                              \
         ${output_show_frame}                        \
@@ -577,6 +580,7 @@ if [ ${proceed_pdf_gen} -eq 1 ]; then
         --metadata=draft:${output_draft}            \
         --metadata=softcopy:${output_softcopy}      \
         --metadata=papersize:${output_papersize}    \
+        --metadata=fontsize:${output_font_size}     \
         --metadata=lof                              \
         --metadata=lot                              \
         ${output_show_frame}                        \
