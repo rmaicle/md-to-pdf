@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-flag_debug_xmode=0
+flag_debug_mode=0
 
 #
 # Display script usage
