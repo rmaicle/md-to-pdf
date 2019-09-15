@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+
+flag_debug_xmode=0
+
 #
 # Display script usage
 #
@@ -54,6 +57,10 @@ popd() {
     command popd "$@" > /dev/null
 }
 
+echo_debug() {
+    [ ${flag_debug_mode} -eq 1 ] && echo "Debug: ${@}"
+}
+
 # ------------------------------
 
 
@@ -68,7 +75,7 @@ declare -r FONT_SIZE_10=10pt
 declare -r FONT_SIZE_11=11pt
 declare -r FONT_SIZE_12=12pt
 
-debug_mode=0
+
 output_latex=0
 output_draft="false"
 output_softcopy="false"
@@ -86,7 +93,7 @@ fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-debug" ]]; then
     shift
-    debug_mode=1
+    flag_debug_mode=1
 fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-draft" ]]; then
@@ -261,8 +268,7 @@ if [[ $# -gt 0 ]] && [[ "${1}" == "-of" ]]; then
     fi
 fi
 
-if [ ${debug_mode} -eq 1 ]; then
-
+if [ ${flag_debug_mode} -eq 1 ]; then
     echo "Script Dir:    ${SCRIPT_DIR}"
     echo "Current Dir:   ${CURRENT_DIR}"
     echo "Input Dir:     ${INPUT_DIR}"
@@ -327,17 +333,13 @@ done
 # Pre-process TeX files
 
 if [ ${output_image_generate} -eq 1 ]; then
-    if [ ${debug_mode} -eq 1 ]; then
-        echo "Preprocessing TeX files..."
-    fi
+    echo_debug "Preprocessing TeX files..."
     pushd "${INPUT_DIR}"
     if [ ! -d "tex-images" ]; then
         mkdir "tex-images"
     fi
     for file in "${tex_files[@]}"; do
-        if [ ${debug_mode} -eq 1 ]; then
-            echo "  ${INPUT_DIR}/${file}"
-        fi
+        echo_debug "  ${INPUT_DIR}/${file}"
         # Argument -draftmode tells pdflatex not to generate PDF file.
         # Argument -output-directory is where the outputs are sent.
         pdflatex                            \
@@ -355,9 +357,7 @@ if [ ${output_image_generate} -eq 1 ]; then
         mv -f "${basefilename}.pdf" ./tex-images/
         mv -f "${basefilename}.png" ./tex-images/
     done
-    if [ ${debug_mode} -eq 1 ]; then
-        echo "Deleting intermediate files:"
-    fi
+    echo_debug "Deleting intermediate files:"
     popd # ${INPUT_DIR}
 else
     echo "Skipping preprocessing of TeX files."
@@ -367,16 +367,12 @@ fi
 
 pp_fm_files=()
 if [ ${output_frontmatter_generate} == 1 ]; then
-    if [ ${debug_mode} -eq 1 ]; then
-        echo "Preprocessing frontmatter markdown files..."
-    fi
+    echo_debug "Preprocessing frontmatter markdown files..."
     # Because Pandoc only looks for latex template image files on its
     # "working directory", we must go into the latex templates directory
     pushd "${TEMPLATE_DIR}"
     for file in "${source_fm_files[@]}"; do
-        if [ ${debug_mode} -eq 1 ]; then
-            echo "  ${file}"
-        fi
+        echo_debug "  ${file}"
         basefilename="${file%.*}"
         pp_fm_files+=("${basefilename}.tex")
         pandoc                                          \
@@ -422,16 +418,12 @@ fi
 
 pp_bm_files=()
 if [ ${output_backmatter_generate} == 1 ]; then
-    if [ ${debug_mode} -eq 1 ]; then
-        echo "Preprocessing backmatter markdown files..."
-    fi
+    echo_debug "Preprocessing backmatter markdown files..."
     # Because Pandoc only looks for latex template image files on its
     # "working directory", we must go into the latex templates directory
     pushd "${TEMPLATE_DIR}"
     for file in "${source_bm_files[@]}"; do
-        if [ ${debug_mode} -eq 1 ]; then
-            echo "  ${file}"
-        fi
+        echo_debug "  ${file}"
         basefilename="${file%.*}"
         pp_bm_files+=("${basefilename}.tex")
         pandoc                                          \
@@ -474,9 +466,7 @@ fi
 
 # Pre-process mainmatter markdown files
 
-if [ ${debug_mode} -eq 1 ]; then
-    echo "Preprocessing markdown files..."
-fi
+echo_debug "Preprocessing markdown files..."
 pushd "${INPUT_DIR}"
 if [ ! -d "images" ]; then
     mkdir "images"
@@ -485,9 +475,7 @@ pp_files=()
 for file in "${source_files[@]}"; do
     ppfile="${file%.*}_pp.md"
     pp_files+=("${INPUT_DIR}/${ppfile}")
-    if [ ${debug_mode} -eq 1 ]; then
-        echo "  ${INPUT_DIR}/${ppfile}"
-    fi
+    echo_debug "  ${INPUT_DIR}/${ppfile}"
     pp ${file} > "${ppfile}"
 done
 popd # ${INPUT_DIR}
@@ -504,9 +492,7 @@ pushd "${TEMPLATE_DIR}"
 proceed_pdf_gen=1
 
 if [ ${output_latex} -eq 1 ]; then
-    if [ ${debug_mode} -eq 1 ]; then
-        echo "Creating Tex/LaTeX file ${OUTPUT_LATEX}..."
-    fi
+    echo_debug "Creating Tex/LaTeX file ${OUTPUT_LATEX}..."
     rm -f "${OUTPUT_LATEX}"
 
     pandoc                                          \
@@ -568,9 +554,7 @@ if [ ${output_latex} -eq 1 ]; then
 fi
 
 if [ ${proceed_pdf_gen} -eq 1 ]; then
-    if [ ${debug_mode} -eq 1 ]; then
-        echo "Converting markdown files to ${OUTPUT_FILENAME}..."
-    fi
+    echo_debug "Converting markdown files to ${OUTPUT_FILENAME}..."
     pandoc                                          \
         ${pp_files[@]}                              \
         ${include_front_matter}                     \
@@ -629,11 +613,9 @@ fi
 
 popd # ${TEMPLATE_DIR}
 
-if [ ${debug_mode} -eq 1 ]; then
-    echo "Deleting intermediate files:"
-fi
+echo_debug "Deleting intermediate files:"
 for file in "${pp_files[@]}"; do
-    if [ ${debug_mode} -eq 0 ]; then
+    if [ ${flag_debug_mode} -eq 0 ]; then
         rm -f "${file}"
     else
         echo "  ${file}"
@@ -641,7 +623,7 @@ for file in "${pp_files[@]}"; do
 done
 
 pushd "${INPUT_DIR}"
-if [ ${debug_mode} -eq 0 ]; then
+if [ ${flag_debug_mode} -eq 0 ]; then
     if [ -d "images" ]; then
         rmdir "images"
     fi
@@ -649,7 +631,7 @@ fi
 
 if [ ${output_frontmatter_generate} == 1 ]; then
     for file in "${pp_fm_files[@]}"; do
-        if [ ${debug_mode} -eq 0 ]; then
+        if [ ${flag_debug_mode} -eq 0 ]; then
             rm -f "${file}"
         fi
     done
