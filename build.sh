@@ -316,7 +316,14 @@ for file in "${temp_source_files[@]}"; do
             exit 1
         else
             echo "  Found: ${file}"
-            file_prefix=${file:0:4}
+            # ${file} may contain a directory as in the case of big
+            # documentation projects that group markdown files into
+            # subdirectories.
+            #
+            # Let's get the base filename. If the file does not
+            # contain a subdirectory then the result is the same.
+            base_filename=$(basename ${file})
+            file_prefix=${base_filename:0:4}
             if [[ "${file_prefix}" =~ ^fm_[a-z]$ ]]; then
                 source_fm_files+=("${INPUT_DIR}/${file}")
             elif [[ "${file_prefix}" =~ ^bm_[a-z]$ ]]; then
