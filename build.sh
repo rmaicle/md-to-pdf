@@ -77,10 +77,10 @@ declare -r FONT_SIZE_12=12pt
 
 
 output_latex=0
-output_draft="false"
-output_softcopy="false"
-output_paper=${PAPER_SIZE_USLETTER}
-output_font_size=${FONT_SIZE_10}
+output_draft=""
+output_softcopy=""
+output_paper=""
+output_font_size=""
 output_show_frame=""
 output_image_generate=1
 output_frontmatter_generate=1
@@ -98,34 +98,38 @@ fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-draft" ]]; then
     shift
-    output_draft="true"
+    output_draft="--metadata=is_draft:true"
 fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-softcopy" ]]; then
     shift
-    output_softcopy="true"
+    output_softcopy="--metadata=is_softcopy:true"
 fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-papersize" ]]; then
     if [[ "${2}" == "usletter" ]]; then
-        output_papersize=${PAPER_SIZE_USLETTER}
+        output_papersize="--metadata=papersize:${PAPER_SIZE_USLETTER}"
     elif [[ "${2}" == "a4" ]]; then
-        output_papersize=${PAPER_SIZE_A4}
+        output_papersize="--metadata=papersize:${PAPER_SIZE_A4}"
     else
-        output_papersize=${PAPER_SIZE_USLETTER}
+        echo "Unknown paper size argument."
+        echo "Aborting."
+        exit 1
     fi
     shift 2
 fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-fontsize" ]]; then
     if [[ "${2}" == "10" ]]; then
-        output_font_size=${FONT_SIZE_10}
+        output_font_size="--metadata=fontsize:${FONT_SIZE_10}"
     elif [[ "${2}" == "11" ]]; then
-        output_font_size=${FONT_SIZE_11}
+        output_font_size="--metadata=fontsize:${FONT_SIZE_11}"
     elif [[ "${2}" == "12" ]]; then
-        output_font_size=${FONT_SIZE_12}
+        output_font_size="--metadata=fontsize:${FONT_SIZE_12}"
     else
-        output_font_size=${FONT_SIZE_10}
+        echo "Unknown font size argument."
+        echo "Aborting."
+        exit 1
     fi
     shift 2
 fi
@@ -279,28 +283,28 @@ if [ ${flag_debug_mode} -eq 1 ]; then
     echo "Template File: ${TEMPLATE_FILE}"
 fi
 
-# Read the TeX input file contents
-# and check if files exist.
+# If there is a TeX input file then read its contents
 
 tex_files=()
 temp_tex_files=()
-echo "Checking existence of TeX files:"
-readarray -t temp_tex_files <"${INPUT_DIR}/image.txt"
-for file in "${temp_tex_files[@]}"; do
-    #exclude_marker=${file:0:2}
-    if [[ ! -z "${file}" ]] && [[ "${file:0:2}" != "x " ]]; then
-        if [ ! -e "${INPUT_DIR}/${file}" ]; then
-            echo "  Missing TeX file: ${INPUT_DIR}/${file}"
-            exit 1
-        else
-            echo "  Found: ${file}"
-            tex_files+=("${file}")
+if [ -e "${INPUT_DIR}/image.txt" ]; then
+    echo "Checking existence of TeX files:"
+    readarray -t temp_tex_files <"${INPUT_DIR}/image.txt"
+    for file in "${temp_tex_files[@]}"; do
+        #exclude_marker=${file:0:2}
+        if [[ ! -z "${file}" ]] && [[ "${file:0:2}" != "x " ]]; then
+            if [ ! -e "${INPUT_DIR}/${file}" ]; then
+                echo "  Missing TeX file: ${INPUT_DIR}/${file}"
+                exit 1
+            else
+                echo "  Found: ${file}"
+                tex_files+=("${file}")
+            fi
         fi
-    fi
-done
+    done
+fi
 
 # Read the markdown input file contents
-# and check if files exist.
 
 temp_source_files=()
 source_files=()
@@ -384,10 +388,10 @@ if [ ${output_frontmatter_generate} == 1 ]; then
         pp_fm_files+=("${basefilename}.tex")
         pandoc                                          \
             ${file}                                     \
-            --metadata=draft:${output_draft}            \
-            --metadata=softcopy:${output_softcopy}      \
-            --metadata=papersize:${output_papersize}    \
-            --metadata=fontsize:${output_font_size}     \
+            ${output_draft}                             \
+            ${output_softcopy}                          \
+            ${output_papersize}                         \
+            ${output_font_size}                         \
             ${output_show_frame}                        \
             -f markdown+blank_before_blockquote         \
             -f markdown+blank_before_header             \
@@ -435,10 +439,10 @@ if [ ${output_backmatter_generate} == 1 ]; then
         pp_bm_files+=("${basefilename}.tex")
         pandoc                                          \
             ${file}                                     \
-            --metadata=draft:${output_draft}            \
-            --metadata=softcopy:${output_softcopy}      \
-            --metadata=papersize:${output_papersize}    \
-            --metadata=fontsize:${output_font_size}     \
+            ${output_draft}                             \
+            ${output_softcopy}                          \
+            ${output_papersize}                         \
+            ${output_font_size}                         \
             ${output_show_frame}                        \
             -f markdown+blank_before_blockquote         \
             -f markdown+blank_before_header             \
@@ -508,10 +512,10 @@ if [ ${output_latex} -eq 1 ]; then
         ${include_back_matter}                      \
         --resource-path=.:${INPUT_DIR}              \
         --template="${TEMPLATE_FILE}"               \
-        --metadata=draft:${output_draft}            \
-        --metadata=softcopy:${output_softcopy}      \
-        --metadata=papersize:${output_papersize}    \
-        --metadata=fontsize:${output_font_size}     \
+        ${output_draft}                             \
+        ${output_softcopy}                          \
+        ${output_papersize}                         \
+        ${output_font_size}                         \
         --metadata=lof                              \
         --metadata=lot                              \
         ${output_show_frame}                        \
@@ -568,10 +572,10 @@ if [ ${proceed_pdf_gen} -eq 1 ]; then
         ${include_back_matter}                      \
         --resource-path=.:${INPUT_DIR}              \
         --template="${TEMPLATE_FILE}"               \
-        --metadata=draft:${output_draft}            \
-        --metadata=softcopy:${output_softcopy}      \
-        --metadata=papersize:${output_papersize}    \
-        --metadata=fontsize:${output_font_size}     \
+        ${output_draft}                             \
+        ${output_softcopy}                          \
+        ${output_papersize}                         \
+        ${output_font_size}                         \
         --metadata=lof                              \
         --metadata=lot                              \
         ${output_show_frame}                        \
