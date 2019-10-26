@@ -1,75 +1,86 @@
 #!/usr/bin/env bash
 
-
-flag_debug_mode=0
+declare INPUT_FILE="filelist.txt"
 
 #
 # Display script usage
 #
 function show_usage() {
-    echo "Script for converting markdown files to PDF using LaTeX."
-    echo "It reads the input file filelist.txt in some input directory"
-    echo "reads the markdown files specified in the input file,"
-    echo "pre-process and converts them to PDF a file using the"
-    echo "specified TeX/LaTex template files."
-    echo ""
-    echo "Usage:"
-    echo "  $(basename $0) [-debug] [option...]"
-    echo "Options:"
-    echo "  -h            print help and exit."
-    echo "  -debug        run script in debug mode."
-    echo "  -draft        generate draft version PDF document."
-    echo "  -softcopy     generate E-book format PDF document."
-    echo "  -papersize    paper size; supported values are [ letter | a4 ];"
-    echo "                  default is letter"
-    echo "  -fontsize n   main font size; supported values are [ 10 | 11 | 12];"
-    echo "                  all values use point size; default is 10."
-    echo "  -showframe    show page margins."
-    echo "  -imagex       do not generate TeX images."
-    echo "  -frontmatterx do not generate user-supplied frontmatter contents."
-    echo "  -appendixx    do not generate appendices."
-    echo "  -i [file]     input file containing the list of markdown files to"
-    echo "                  process; if not specified and this script file is"
-    echo "                  called from another script file, then the current"
-    echo "                  directory is the calling script file's directory"
-    echo "                  and the filelist.txt file is assumed to be there."
-    echo "  -td [dir]     TeX/LaTeX template base directory; absolute path or"
-    echo "                  relative to the directory this shell script is in;"
-    echo "                  this is where template images must be found."
-    echo "  -tf [file]    template file; relative to the TeX/LaTeX template"
-    echo "                  base directory."
-    echo "  -o            output TeX/LaTeX file."
-    echo "  -od [dir]     output directory; default is current directory."
-    echo "  -of [file]    output base filename; default is 'output'"
-    echo "                  default output filename is '<file>.pdf."
-    echo "  -v            verbose messages."
+cat << EOF
+Script for converting markdown files to PDF using LaTeX.
+
+It reads an input file (default is ${INPUT_FILE}) containing a list of
+markdown files. The markdown files are pre-processed before converting
+them to a PDF file using the specified TeX/LaTex template file.
+
+Usage:
+  ${0##*/} [-debug] [option...]
+Options:
+  -h            print help and exit
+  -debug        run script in debug mode
+  -draft        generate draft version PDF document
+  -softcopy     generate E-book format PDF document
+  -papersize    paper size; default is letter
+$(printf '                  %s\n' ${ARG_PAPER_SIZES[@]})
+  -fontsize n   body text font size; values are in point size;
+                  default is 10
+$(printf '                  %s\n' ${ARG_FONT_SIZES[@]})
+  -showframe    show page margins
+  -imagex       do not generate TeX images
+  -frontmatterx do not generate user-supplied frontmatter contents
+  -backmatterx  do not generate user-supplied backmatter contents
+  -i [file]     input file containing the list of markdown files to
+                  process; if not specified and this script file is
+                  called from another script file, then the current
+                  directory is the calling script file's directory
+                  and the filelist.txt file is assumed to be there
+  -td [dir]     TeX/LaTeX template base directory; absolute path or
+                  relative to the directory this shell script is in;
+                  this is where template images must be found
+  -tf [file]    template file; relative to the TeX/LaTeX template
+                  base directory
+  -o            output TeX/LaTeX file
+  -od [dir]     output directory; default is current directory
+  -of [file]    output base filename; default is 'output'
+                  default output filename is '<file>.pdf
+  -v            verbose messages
+Input File Syntax:
+  - frontmatter files are prefixed with 'fm_[a-z]_'
+  - backmatter files are prefixed with 'bm_[a-z]_'
+  - excluded files are prefixed with 'x ', small letter X followed by
+    a space character
+
+  The following is a minimal example of an input file:
+
+    00_0_metadata.md
+    fm_a_preface.md
+    01_introduction.md
+    02_structure_layout.md
+    03_formatting.md
+    x bm_a_build_script.md
+    bm_b_license.md
+EOF
 }
-
-# ------------------------------
-
-# Silence pushd and popd commands
-
-pushd() {
-    command pushd "$@" > /dev/null
-}
-
-popd() {
-    command popd "$@" > /dev/null
-}
-
-echo_debug() {
-    [ ${flag_debug_mode} -eq 1 ] && echo "Debug: ${@}"
-}
-
-# ------------------------------
 
 
 
 declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 declare -r CURRENT_DIR=$(pwd)
 
-declare -r PAPER_SIZE_USLETTER="letterpaper"
-declare -r PAPER_SIZE_A4="a4paper"
+pushd ${SCRIPT_DIR} > /dev/null
+. utility.sh
+. document.sh
+popd > /dev/null
+
+init_document_vars
+
+
+echo_debug "SCRIPT_DIR: ${SCRIPT_DIR}"
+echo_debug "CURRENT_DIR: ${CURRENT_DIR}"
+
+
+#declare -r PAPER_SIZE_USLETTER="letterpaper"
+#declare -r PAPER_SIZE_A4="a4paper"
 
 declare -r FONT_SIZE_10=10pt
 declare -r FONT_SIZE_11=11pt
@@ -107,12 +118,13 @@ if [[ $# -gt 0 ]] && [[ "${1}" = "-softcopy" ]]; then
 fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-papersize" ]]; then
-    if [[ "${2}" == "usletter" ]]; then
-        output_papersize="--metadata=papersize:${PAPER_SIZE_USLETTER}"
-    elif [[ "${2}" == "a4" ]]; then
-        output_papersize="--metadata=papersize:${PAPER_SIZE_A4}"
+    if [[ "${2}" == "${ARG_PAPER_USLETTER}" ]]; then
+        output_papersize="--metadata=papersize:${PAPER_US_LETTER}"
+    elif [[ "${2}" == "${ARG_PAPER_A4}" ]]; then
+        output_papersize="--metadata=papersize:${PAPER_A4}"
     else
         echo "Unknown paper size argument."
+        ECHO "Use one of: ${ARG_PAPER_SIZES[@]}"
         echo "Aborting."
         exit 1
     fi
@@ -120,14 +132,15 @@ if [[ $# -gt 0 ]] && [[ "${1}" = "-papersize" ]]; then
 fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-fontsize" ]]; then
-    if [[ "${2}" == "10" ]]; then
-        output_font_size="--metadata=fontsize:${FONT_SIZE_10}"
-    elif [[ "${2}" == "11" ]]; then
-        output_font_size="--metadata=fontsize:${FONT_SIZE_11}"
-    elif [[ "${2}" == "12" ]]; then
-        output_font_size="--metadata=fontsize:${FONT_SIZE_12}"
+    if [[ "${2}" == "${ARG_FONT_SIZE_10PT}" ]]; then
+        output_font_size="--metadata=fontsize:${FONT_SIZE_10PT}"
+    elif [[ "${2}" == "${ARG_FONT_SIZE_11PT}" ]]; then
+        output_font_size="--metadata=fontsize:${FONT_SIZE_11PT}"
+    elif [[ "${2}" == "${ARG_FONT_SIZE_12PT}" ]]; then
+        output_font_size="--metadata=fontsize:${FONT_SIZE_12PT}"
     else
-        echo "Unknown font size argument."
+        echo "Unknown font size argument: ${2}"
+        ECHO "Use one of: ${ARG_FONT_SIZES[@]}"
         echo "Aborting."
         exit 1
     fi
@@ -144,12 +157,22 @@ if [[ $# -gt 0 ]] && [[ "${1}" = "-imagex" ]]; then
     output_image_generate=0
 fi
 
+if [[ $# -gt 0 ]] && [[ "${1}" = "-frontmatterx" ]]; then
+    shift
+    output_frontmatter_generate=0
+fi
+
+if [[ $# -gt 0 ]] && [[ "${1}" = "-backmatterx" ]]; then
+    shift
+    output_backmatter_generate=0
+fi
+
 
 # Determine the full path of the specified input directory.
 # If the input directory is not specified, then it defaults to
 # the current working directory.
 
-INPUT_FILE="filelist.txt"
+
 INPUT_DIR="${CURRENT_DIR}"
 if [[ $# -gt 0 ]] && [[ "${1}" == "-i" ]]; then
     arg_input_file="${2}"
@@ -340,6 +363,9 @@ for file in "${temp_source_files[@]}"; do
         fi
     fi
 done
+
+echo_debug "Frontmatter: ${#source_fm_files[@]}"
+echo_debug "Backmatter: ${#source_bm_files[@]}"
 
 # Pre-process TeX files
 
@@ -626,12 +652,10 @@ fi
 
 popd # ${TEMPLATE_DIR}
 
-echo_debug "Deleting intermediate files:"
+echo_debug "Deleting matter intermediate files:"
 for file in "${pp_files[@]}"; do
     if [ ${flag_debug_mode} -eq 0 ]; then
         rm -f "${file}"
-    else
-        echo "  ${file}"
     fi
 done
 
@@ -641,6 +665,7 @@ if [ ${flag_debug_mode} -eq 0 ]; then
         rmdir "images"
     fi
 fi
+popd # ${INPUT_DIR}
 
 if [ ${output_frontmatter_generate} == 1 ]; then
     for file in "${pp_fm_files[@]}"; do
@@ -659,6 +684,5 @@ if [ ${output_backmatter_generate} == 1 ]; then
         fi
     done
 fi
-popd # ${INPUT_DIR}
 
 echo "Done."
