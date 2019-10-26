@@ -650,6 +650,15 @@ if [ ${output_frontmatter_generate} == 1 ]; then
     done
 fi
 
+if [ ${output_backmatter_generate} == 1 ]; then
+    echo_debug "Deleting backmatter intermediate files..."
+    for file in "${pp_bm_files[@]}"; do
+        if [ ${flag_debug_mode} -eq 0 ]; then
+            rm -f "${file}"
+            rm -f "${file%.*}.md"
+        fi
+    done
+fi
 popd # ${INPUT_DIR}
 
 echo "Done."
