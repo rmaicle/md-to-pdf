@@ -325,12 +325,12 @@ for file in "${temp_source_files[@]}"; do
             # subdirectories.
             #
             # Let's get the base filename. If the file does not
-            # contain a subdirectory then the result is the same.
+            # contain a directory then the result is the same.
             base_filename=$(basename ${file})
-            file_prefix=${base_filename:0:4}
-            if [[ "${file_prefix}" =~ ^fm_[a-z]$ ]]; then
+            file_prefix=${base_filename:0:5}
+            if [[ "${file_prefix}" =~ ^fm_[a-z]_$ ]]; then
                 source_fm_files+=("${INPUT_DIR}/${file}")
-            elif [[ "${file_prefix}" =~ ^bm_[a-z]$ ]]; then
+            elif [[ "${file_prefix}" =~ ^bm_[a-z]_$ ]]; then
                 source_bm_files+=("${INPUT_DIR}/${file}")
             else
                 # Do not prepend directory location yet.
