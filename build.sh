@@ -435,10 +435,12 @@ if [ ${output_backmatter_generate} == 1 ]; then
     pushd "${TEMPLATE_DIR}"
     for file in "${source_bm_files[@]}"; do
         echo_debug "  ${file}"
-        basefilename="${file%.*}"
+        ppfile="${file%.*}_pp.md"
+        pp ${file} > "${ppfile}"
+        basefilename="${ppfile%.*}"
         pp_bm_files+=("${basefilename}.tex")
         pandoc                                          \
-            ${file}                                     \
+            ${ppfile}                                   \
             ${output_draft}                             \
             ${output_softcopy}                          \
             ${output_papersize}                         \
