@@ -74,17 +74,9 @@ popd > /dev/null
 
 init_document_vars
 
-
 echo_debug "SCRIPT_DIR: ${SCRIPT_DIR}"
 echo_debug "CURRENT_DIR: ${CURRENT_DIR}"
 
-
-#declare -r PAPER_SIZE_USLETTER="letterpaper"
-#declare -r PAPER_SIZE_A4="a4paper"
-
-declare -r FONT_SIZE_10=10pt
-declare -r FONT_SIZE_11=11pt
-declare -r FONT_SIZE_12=12pt
 
 
 output_latex=0
@@ -139,8 +131,8 @@ if [[ $# -gt 0 ]] && [[ "${1}" = "-fontsize" ]]; then
     elif [[ "${2}" == "${ARG_FONT_SIZE_12PT}" ]]; then
         output_font_size="--metadata=fontsize:${FONT_SIZE_12PT}"
     else
-        echo "Unknown font size argument: ${2}"
-        ECHO "Use one of: ${ARG_FONT_SIZES[@]}"
+        echo "Unknown font size argument: '${2}'"
+        echo "Use one of: ${ARG_FONT_SIZES[@]}"
         echo "Aborting."
         exit 1
     fi

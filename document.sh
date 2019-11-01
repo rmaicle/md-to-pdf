@@ -14,9 +14,9 @@ init_document_vars() {
     )
 
     # Used as font size arguments to script
-    declare -r ARG_FONT_SIZE_10PT="10"
-    declare -r ARG_FONT_SIZE_11PT="11"
-    declare -r ARG_FONT_SIZE_12PT="12"
+    declare -g -r ARG_FONT_SIZE_10PT="10"
+    declare -g -r ARG_FONT_SIZE_11PT="11"
+    declare -g -r ARG_FONT_SIZE_12PT="12"
 
     # Used to check font size arguments to script
     declare -g -r -a ARG_FONT_SIZES=(
@@ -29,7 +29,7 @@ init_document_vars() {
     declare -g -r PAPER_A4="a4paper"
     declare -g -r PAPER_US_LETTER="letterpaper"
 
-    declare -r FONT_SIZE_10PT="10pt"
-    declare -r FONT_SIZE_11PT="11pt"
-    declare -r FONT_SIZE_12PT="12pt"
+    declare -g -r FONT_SIZE_10PT="10pt"
+    declare -g -r FONT_SIZE_11PT="11pt"
+    declare -g -r FONT_SIZE_12PT="12pt"
 }
