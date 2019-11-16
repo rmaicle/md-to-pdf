@@ -16,34 +16,43 @@ them to a PDF file using the specified TeX/LaTex template file.
 Usage:
   ${0##*/} [-debug] [option...]
 Options:
-  -h            print help and exit
-  -debug        run script in debug mode
-  -draft        generate draft version PDF document
-  -softcopy     generate E-book format PDF document
-  -papersize    paper size; default is letter
-$(printf '                  %s\n' ${ARG_PAPER_SIZES[@]})
-  -fontsize n   body text font size; values are in point size;
-                  default is 10
-$(printf '                  %s\n' ${ARG_FONT_SIZES[@]})
-  -showframe    show page margins
-  -imagex       do not generate TeX images
-  -frontmatterx do not generate user-supplied frontmatter contents
-  -backmatterx  do not generate user-supplied backmatter contents
-  -i [file]     input file containing the list of markdown files to
-                  process; if not specified and this script file is
-                  called from another script file, then the current
-                  directory is the calling script file's directory
-                  and the filelist.txt file is assumed to be there
-  -td [dir]     TeX/LaTeX template base directory; absolute path or
-                  relative to the directory this shell script is in;
-                  this is where template images must be found
-  -tf [file]    template file; relative to the TeX/LaTeX template
-                  base directory
-  -o            output TeX/LaTeX file
-  -od [dir]     output directory; default is current directory
-  -of [file]    output base filename; default is 'output'
-                  default output filename is '<file>.pdf
-  -v            verbose messages
+  -h                print help and exit
+  -debug            run script in debug mode
+  -draft            generate draft version PDF document
+  -softcopy         generate E-book format PDF document
+  -papersize        paper size; default is letter
+$(printf '                      %s\n' ${ARG_PAPER_SIZES[@]})
+  -fontsize n       body text font size; values are in point size;
+                      default is 10
+$(printf '                      %s\n' ${ARG_FONT_SIZES[@]})
+  -beforetitlerule  offset the title rule display; this is the height
+                      above the baseline to raise the rule box; default
+                      is 0pt; positive values raises the rule; negative
+                      values lowers the rule
+  -aftertitlerule   vertical space after title rule; default is 5pt;
+  -showframe        show page margins
+  -imagex           do not generate TeX images
+  -copyrightx       do not generate copyright page
+  -tocx             do not generate table of contents
+  -lotx             do not generate list of tables
+  -lofx             do not generate list of figures
+  -frontmatterx     do not generate user-supplied frontmatter contents
+  -backmatterx      do not generate user-supplied backmatter contents
+  -i [file]         input file containing the list of markdown files to
+                      process; if not specified and this script file is
+                      called from another script file, then the current
+                      directory is the calling script file's directory
+                      and the filelist.txt file is assumed to be there
+  -td [dir]         TeX/LaTeX template base directory; absolute path or
+                      relative to the directory this shell script is in;
+                      this is where template images must be found
+  -tf [file]        template file; relative to the TeX/LaTeX template
+                      base directory
+  -o                output TeX/LaTeX file
+  -od [dir]         output directory; default is current directory
+  -of [file]        output base filename; default is 'output'
+                      default output filename is '<file>.pdf
+  -v                verbose messages
 Input File Syntax:
   - frontmatter files are prefixed with 'fm_[a-z]_'
   - backmatter files are prefixed with 'bm_[a-z]_'
@@ -84,8 +93,14 @@ output_draft=""
 output_softcopy=""
 output_paper=""
 output_font_size=""
+output_before_title_rule=""
+output_after_title_rule=""
 output_show_frame=""
 output_image_generate=1
+output_copyright_page="--metadata=with_copyright:true"
+output_toc_page="--metadata=toc:true"
+output_lot_page="--metadata=lot:true"
+output_lof_page="--metadata=lof:true"
 output_frontmatter_generate=1
 output_backmatter_generate=1
 
@@ -139,6 +154,20 @@ if [[ $# -gt 0 ]] && [[ "${1}" = "-fontsize" ]]; then
     shift 2
 fi
 
+if [[ $# -gt 0 ]] && [[ "${1}" = "-beforetitlerule" ]]; then
+    output_before_title_rule="--metadata=beforetitlerule:${2}"
+    shift 2
+else
+    output_before_title_rule="--metadata=beforetitlerule:0pt"
+fi
+
+if [[ $# -gt 0 ]] && [[ "${1}" = "-aftertitlerule" ]]; then
+    output_after_title_rule="--metadata=aftertitlerule:${2}"
+    shift 2
+else
+    output_after_title_rule="--metadata=aftertitlerule:5pt"
+fi
+
 if [[ $# -gt 0 ]] && [[ "${1}" = "-showframe" ]]; then
     shift
     output_show_frame="--metadata=showframe:true"
@@ -147,6 +176,27 @@ fi
 if [[ $# -gt 0 ]] && [[ "${1}" = "-imagex" ]]; then
     shift
     output_image_generate=0
+fi
+
+if [[ $# -gt 0 ]] && [[ "${1}" = "-copyrightx" ]]; then
+    shift
+    output_copyright_page=""
+fi
+
+
+if [[ $# -gt 0 ]] && [[ "${1}" = "-tocx" ]]; then
+    shift
+    output_toc_page=""
+fi
+
+if [[ $# -gt 0 ]] && [[ "${1}" = "-lotx" ]]; then
+    shift
+    output_lot_page=""
+fi
+
+if [[ $# -gt 0 ]] && [[ "${1}" = "-lofx" ]]; then
+    shift
+    output_lof_page=""
 fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-frontmatterx" ]]; then
@@ -189,33 +239,60 @@ fi
 
 # Determine the full path of the specified template directory.
 
-TEMPLATE_DIR="${SCRIPT_DIR}"
+# TEMPLATE_DIR="${SCRIPT_DIR}"
+# if [ $# -gt 0 ]; then
+#     if [[ "${1}" == "-td" ]]; then
+#         arg_template_dir="${2}"
+#         shift 2
+#         if [ -z "${arg_template_dir}" ]; then
+#             echo "Error: Template directory is not specified."
+#             exit 1
+#         else
+#             pushd "${SCRIPT_DIR}"
+#             if [ -d "${arg_template_dir}" ]; then
+#                 pushd "${arg_template_dir}"
+#                 TEMPLATE_DIR=$(pwd)
+#                 popd
+#             else
+#                 echo "Error: Template directory does not exist: ${arg_template_dir}"
+#                 echo "Current directory: $(pwd)"
+#                 popd
+#                 exit 1
+#             fi
+#             popd
+#         fi
+#     fi
+# else
+#     echo "Error: Missing template directory argument."
+#     exit 1
+# fi
+
+# NOTE:
+# The template directory is always relative to this directory.
+# It might as well be the default.
+
+pushd "${SCRIPT_DIR}"
+cd ../latex-templates
+TEMPLATE_DIR=$(pwd)
 if [ $# -gt 0 ]; then
     if [[ "${1}" == "-td" ]]; then
         arg_template_dir="${2}"
         shift 2
-        if [ -z "${arg_template_dir}" ]; then
-            echo "Error: Template directory is not specified."
-            exit 1
-        else
-            pushd "${SCRIPT_DIR}"
+        if [ -n "${arg_template_dir}" ]; then
             if [ -d "${arg_template_dir}" ]; then
-                pushd "${arg_template_dir}"
                 TEMPLATE_DIR=$(pwd)
-                popd
             else
                 echo "Error: Template directory does not exist: ${arg_template_dir}"
                 echo "Current directory: $(pwd)"
-                popd
                 exit 1
             fi
-            popd
         fi
     fi
-else
-    echo "Error: Missing template directory argument."
-    exit 1
 fi
+popd
+
+
+
 
 TEMPLATE_FILE=""
 if [ $# -gt 0 ]; then
@@ -361,11 +438,13 @@ echo_debug "Backmatter: ${#source_bm_files[@]}"
 
 # Pre-process TeX files
 
+# TODO: Use variable for .tex-images directory
+
 if [ ${output_image_generate} -eq 1 ]; then
     echo_debug "Preprocessing TeX files..."
     pushd "${INPUT_DIR}"
-    if [ ! -d "tex-images" ]; then
-        mkdir "tex-images"
+    if [ ! -d ".tex-images" ]; then
+        mkdir ".tex-images"
     fi
     for file in "${tex_files[@]}"; do
         echo_debug "  ${INPUT_DIR}/${file}"
@@ -381,10 +460,10 @@ if [ ${output_image_generate} -eq 1 ]; then
         # as a work around.
         # pdfTeX 3.14159265-2.6-1.40.20 (TeX Live 2019/Arch Linux)
         basefilename="${file%.*}"
-        mv -f "${basefilename}.aux" ./tex-images/
-        mv -f "${basefilename}.log" ./tex-images/
-        mv -f "${basefilename}.pdf" ./tex-images/
-        mv -f "${basefilename}.png" ./tex-images/
+        mv -f "${basefilename}.aux" ./.tex-images/
+        mv -f "${basefilename}.log" ./.tex-images/
+        mv -f "${basefilename}.pdf" ./.tex-images/
+        mv -f "${basefilename}.png" ./.tex-images/
     done
     echo_debug "Deleting intermediate files:"
     popd # ${INPUT_DIR}
@@ -410,6 +489,7 @@ if [ ${output_frontmatter_generate} == 1 ]; then
             ${output_softcopy}                          \
             ${output_papersize}                         \
             ${output_font_size}                         \
+            ${output_toc_page}                          \
             ${output_show_frame}                        \
             -f markdown+blank_before_blockquote         \
             -f markdown+blank_before_header             \
@@ -427,7 +507,6 @@ if [ ${output_frontmatter_generate} == 1 ]; then
             --to=latex                                  \
             --pdf-engine=pdflatex                       \
             --atx-headers                               \
-            --toc                                       \
             --top-level-division=chapter                \
             --listings                                  \
             > "${basefilename}.tex"
@@ -463,6 +542,7 @@ if [ ${output_backmatter_generate} == 1 ]; then
             ${output_softcopy}                          \
             ${output_papersize}                         \
             ${output_font_size}                         \
+            ${output_toc_page}                          \
             ${output_show_frame}                        \
             -f markdown+blank_before_blockquote         \
             -f markdown+blank_before_header             \
@@ -480,7 +560,6 @@ if [ ${output_backmatter_generate} == 1 ]; then
             --to=latex                                  \
             --pdf-engine=pdflatex                       \
             --atx-headers                               \
-            --toc                                       \
             --top-level-division=chapter                \
             --listings                                  \
             > "${basefilename}.tex"
@@ -496,6 +575,8 @@ if [ ${output_backmatter_generate} == 1 ]; then
 fi
 
 # Pre-process mainmatter markdown files
+
+# TODO: What is this images directory for?
 
 echo_debug "Preprocessing markdown files..."
 pushd "${INPUT_DIR}"
@@ -536,8 +617,10 @@ if [ ${output_latex} -eq 1 ]; then
         ${output_softcopy}                          \
         ${output_papersize}                         \
         ${output_font_size}                         \
-        --metadata=lof                              \
-        --metadata=lot                              \
+        ${output_copyright_page}                    \
+        ${output_toc_page}                          \
+        ${output_lot_page}                          \
+        ${output_lof_page}                          \
         ${output_show_frame}                        \
         -f markdown+blank_before_blockquote         \
         -f markdown+blank_before_header             \
@@ -556,7 +639,6 @@ if [ ${output_latex} -eq 1 ]; then
         --to=latex                                  \
         --pdf-engine=pdflatex                       \
         --atx-headers                               \
-        --toc                                       \
         --top-level-division=chapter                \
         --listings                                  \
         > "${OUTPUT_LATEX}"
@@ -596,8 +678,12 @@ if [ ${proceed_pdf_gen} -eq 1 ]; then
         ${output_softcopy}                          \
         ${output_papersize}                         \
         ${output_font_size}                         \
-        --metadata=lof                              \
-        --metadata=lot                              \
+        ${output_before_title_rule}                 \
+        ${output_after_title_rule}                  \
+        ${output_copyright_page}                    \
+        ${output_toc_page}                          \
+        ${output_lot_page}                          \
+        ${output_lof_page}                          \
         ${output_show_frame}                        \
         -f markdown+blank_before_blockquote         \
         -f markdown+blank_before_header             \
@@ -617,7 +703,6 @@ if [ ${proceed_pdf_gen} -eq 1 ]; then
         --output=${OUTPUT_FILENAME}                 \
         --pdf-engine=pdflatex                       \
         --atx-headers                               \
-        --toc                                       \
         --top-level-division=chapter                \
         --listings
 
