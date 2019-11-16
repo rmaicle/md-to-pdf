@@ -742,6 +742,11 @@ if [ ${flag_debug_mode} -eq 0 ]; then
         rmdir "images"
     fi
 fi
+if [ ${flag_debug_mode} -eq 0 ]; then
+    if [ -d ".tex-images" ]; then
+        rm -rf "./.tex-images"
+    fi
+fi
 popd # ${INPUT_DIR}
 
 if [ ${output_frontmatter_generate} == 1 ]; then
