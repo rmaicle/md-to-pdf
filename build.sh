@@ -411,6 +411,8 @@ fi
 
 # Read the markdown input file contents
 
+skip_count=0
+found_count=0
 temp_source_files=()
 source_files=()
 source_fm_files=()
@@ -418,13 +420,16 @@ source_bm_files=()
 echo "Checking existence of markdown files:"
 readarray -t temp_source_files <"${INPUT_DIR}/${INPUT_FILE}"
 for file in "${temp_source_files[@]}"; do
-    #exclude_marker=${file:0:2}
-    if [[ ! -z "${file}" ]] && [[ "${file:0:2}" != "x " ]]; then
+    if [[ ! -z "${file}" ]] && [[ "${file:0:2}" == "x " ]]; then
+        echo "  Skip:  ${file}"
+        skip_count=$((${skip_count} + 1))
+    elif [[ ! -z "${file}" ]] && [[ "${file:0:2}" != "x " ]]; then
         if [ ! -e "${INPUT_DIR}/${file}" ]; then
             echo "  Missing markdown file: ${INPUT_DIR}/${file}"
             exit 1
         else
             echo "  Found: ${file}"
+            found_count=$((${found_count} + 1))
             # ${file} may contain a directory as in the case of big
             # documentation projects that group markdown files into
             # subdirectories.
@@ -432,10 +437,20 @@ for file in "${temp_source_files[@]}"; do
             # Let's get the base filename. If the file does not
             # contain a directory then the result is the same.
             base_filename=$(basename ${file})
-            file_prefix=${base_filename:0:5}
-            if [[ "${file_prefix}" =~ ^fm_[a-z]_$ ]]; then
+            # Do not use source files prefixed with 'pp-'.
+            # Files prefixed with 'pp-' are assumed to be generated
+            # by the preprocessor program (pp).
+            if [ "${base_filename:0:3}" == "pp-" ]; then
+                echo_error "Source files may not begin with 'pp-'."
+                echo_error "Please use another filename for ${file}."
+                echo_error "Aborting."
+                exit 1
+            fi
+            # Compare first 5 characters of the filename and determine
+            # if it is a frontmatter or backmatter file.
+            if [[ "${base_filename:0:5}" =~ ^fm_[a-z]_$ ]]; then
                 source_fm_files+=("${INPUT_DIR}/${file}")
-            elif [[ "${file_prefix}" =~ ^bm_[a-z]_$ ]]; then
+            elif [[ "${base_filename:0:5}" =~ ^bm_[a-z]_$ ]]; then
                 source_bm_files+=("${INPUT_DIR}/${file}")
             else
                 # Do not prepend directory location yet.
@@ -446,8 +461,8 @@ for file in "${temp_source_files[@]}"; do
     fi
 done
 
-echo_debug "Frontmatter: ${#source_fm_files[@]}"
-echo_debug "Backmatter: ${#source_bm_files[@]}"
+echo_debug "Skipped files: ${skip_count}"
+echo_debug "Found files:   ${found_count}"
 
 # Pre-process TeX files
 
