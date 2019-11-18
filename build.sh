@@ -50,9 +50,6 @@ $(printf '                      %s\n' ${ARG_FONT_SIZES[@]})
                       called from another script file, then the current
                       directory is the calling script file's directory
                       and the filelist.txt file is assumed to be there
-  -td [dir]         TeX/LaTeX template base directory; absolute path or
-                      relative to the directory this shell script is in;
-                      this is where template images must be found
   -tf [file]        template file; relative to the TeX/LaTeX template
                       base directory
   -o                output TeX/LaTeX file
@@ -250,60 +247,34 @@ if [[ $# -gt 0 ]] && [[ "${1}" == "-i" ]]; then
     fi
 fi
 
-# Determine the full path of the specified template directory.
+# --------------------------------------------------------------------
+# NOTE:
+# pandoc 2.7.3 --data-dir is not working
+#
+# The template directory will now be where the input files are
+# --------------------------------------------------------------------
 
-# TEMPLATE_DIR="${SCRIPT_DIR}"
+
+# pushd "${SCRIPT_DIR}"
+# cd ../latex-templates
+# arg_template_dir=$(pwd)
 # if [ $# -gt 0 ]; then
 #     if [[ "${1}" == "-td" ]]; then
 #         arg_template_dir="${2}"
 #         shift 2
-#         if [ -z "${arg_template_dir}" ]; then
-#             echo "Error: Template directory is not specified."
-#             exit 1
-#         else
-#             pushd "${SCRIPT_DIR}"
-#             if [ -d "${arg_template_dir}" ]; then
-#                 pushd "${arg_template_dir}"
-#                 TEMPLATE_DIR=$(pwd)
-#                 popd
-#             else
+#         if [ -n "${arg_template_dir}" ]; then
+#             if [ ! -d "${arg_template_dir}" ]; then
 #                 echo "Error: Template directory does not exist: ${arg_template_dir}"
 #                 echo "Current directory: $(pwd)"
-#                 popd
 #                 exit 1
 #             fi
-#             popd
 #         fi
 #     fi
-# else
-#     echo "Error: Missing template directory argument."
-#     exit 1
 # fi
+# declare -r TEMPLATE_DIR=${arg_template_dir}
+# popd
 
-# NOTE:
-# The template directory is always relative to this directory.
-# It might as well be the default.
-
-pushd "${SCRIPT_DIR}"
-cd ../latex-templates
-TEMPLATE_DIR=$(pwd)
-if [ $# -gt 0 ]; then
-    if [[ "${1}" == "-td" ]]; then
-        arg_template_dir="${2}"
-        shift 2
-        if [ -n "${arg_template_dir}" ]; then
-            if [ -d "${arg_template_dir}" ]; then
-                TEMPLATE_DIR=$(pwd)
-            else
-                echo "Error: Template directory does not exist: ${arg_template_dir}"
-                echo "Current directory: $(pwd)"
-                exit 1
-            fi
-        fi
-    fi
-fi
-popd
-
+declare -r TEMPLATE_DIR=${INPUT_DIR}
 
 
 
@@ -317,7 +288,7 @@ if [ $# -gt 0 ]; then
             exit 1
         else
             pushd "${TEMPLATE_DIR}"
-            if [ -e "${arg_template_file}" ]; then
+            if [ -e "${TEMPLATE_DIR}/${arg_template_file}" ]; then
                 TEMPLATE_FILE="${arg_template_file}"
             else
                 echo "Error: Template file does not exist: ${arg_template_file}"
@@ -504,9 +475,8 @@ fi
 pp_fm_files=()
 if [ ${output_frontmatter_generate} == 1 ]; then
     echo_debug "Preprocessing frontmatter markdown files..."
-    # Because Pandoc only looks for latex template image files on its
-    # "working directory", we must go into the latex templates directory
-    pushd "${TEMPLATE_DIR}"
+
+    pushd "${INPUT_DIR}"
     for file in "${source_fm_files[@]}"; do
         echo_debug "  ${file}"
         basefilename="${file%.*}"
@@ -540,7 +510,7 @@ if [ ${output_frontmatter_generate} == 1 ]; then
             --listings                                  \
             > "${basefilename}.tex"
     done
-    popd # ${TEMPLATE_DIR}
+    popd # ${INPUT_DIR}
 fi
 
 include_front_matter=""
@@ -556,13 +526,14 @@ fi
 pp_bm_files=()
 if [ ${output_backmatter_generate} == 1 ]; then
     echo_debug "Preprocessing backmatter markdown files..."
-    # Because Pandoc only looks for latex template image files on its
-    # "working directory", we must go into the latex templates directory
-    pushd "${TEMPLATE_DIR}"
+    pushd "${INPUT_DIR}"
+    if [ ! -d "images" ]; then
+        mkdir "images"
+    fi
     for file in "${source_bm_files[@]}"; do
         echo_debug "  ${file}"
         ppfile="${file%.*}_pp.md"
-        pp ${file} > "${ppfile}"
+        pp -img=${INPUT_DIR}/images ${file} > "${ppfile}"
         basefilename="${ppfile%.*}"
         pp_bm_files+=("${basefilename}.tex")
         pandoc                                          \
@@ -594,7 +565,7 @@ if [ ${output_backmatter_generate} == 1 ]; then
             --listings                                  \
             > "${basefilename}.tex"
     done
-    popd # ${TEMPLATE_DIR}
+    popd # ${INPUT_DIR}
 fi
 
 include_back_matter=""
@@ -616,15 +587,13 @@ fi
 pp_files=()
 for file in "${source_files[@]}"; do
     ppfile="${file%.*}_pp.md"
+    pp -img=${INPUT_DIR}/images ${file} > "${ppfile}"
     pp_files+=("${INPUT_DIR}/${ppfile}")
     echo_debug "  ${INPUT_DIR}/${ppfile}"
-    pp ${file} > "${ppfile}"
 done
 popd # ${INPUT_DIR}
 
-# Because Pandoc only looks for latex template image files on its
-# "working directory", we must go into the latex templates directory
-pushd "${TEMPLATE_DIR}"
+pushd "${INPUT_DIR}"
 
 # Switch that tells whether to proceed generating the PDF file.
 # This is necessary since the LaTeX output may have failed and so
@@ -637,41 +606,41 @@ if [ ${output_latex} -eq 1 ]; then
     echo_debug "Creating Tex/LaTeX file ${OUTPUT_LATEX}..."
     rm -f "${OUTPUT_LATEX}"
 
-    pandoc                                          \
-        ${pp_files[@]}                              \
-        ${include_front_matter}                     \
-        ${include_back_matter}                      \
-        --resource-path=.:${INPUT_DIR}              \
-        --template="${TEMPLATE_FILE}"               \
-        ${output_draft}                             \
-        ${output_softcopy}                          \
-        ${output_papersize}                         \
-        ${output_font_size}                         \
-        ${output_copyright_page}                    \
-        ${output_lot_page}                          \
-        ${output_lof_page}                          \
-        ${output_show_frame}                        \
-        -f markdown+blank_before_blockquote         \
-        -f markdown+blank_before_header             \
-        -f markdown+escaped_line_breaks             \
-        -f markdown+fancy_lists                     \
-        -f markdown+fenced_code_blocks              \
-        -f markdown+footnotes                       \
-        -f markdown+header_attributes               \
-        -f markdown+implicit_figures                \
-        -f markdown+inline_code_attributes          \
-        -f markdown+line_blocks                     \
-        -f markdown+link_attributes                 \
-        -f markdown+raw_tex                         \
-        -f markdown+space_in_atx_header             \
-        ${output_toc_page}                          \
-        ${output_toc_depth}                         \
-        --standalone                                \
-        --to=latex                                  \
-        --pdf-engine=pdflatex                       \
-        --atx-headers                               \
-        --top-level-division=chapter                \
-        --listings                                  \
+    pandoc                                              \
+        ${pp_files[@]}                                  \
+        ${include_front_matter}                         \
+        ${include_back_matter}                          \
+        --resource-path=${INPUT_DIR}:${TEMPLATE_DIR}    \
+        --template="${TEMPLATE_FILE}"                   \
+        ${output_draft}                                 \
+        ${output_softcopy}                              \
+        ${output_papersize}                             \
+        ${output_font_size}                             \
+        ${output_copyright_page}                        \
+        ${output_lot_page}                              \
+        ${output_lof_page}                              \
+        ${output_show_frame}                            \
+        -f markdown+blank_before_blockquote             \
+        -f markdown+blank_before_header                 \
+        -f markdown+escaped_line_breaks                 \
+        -f markdown+fancy_lists                         \
+        -f markdown+fenced_code_blocks                  \
+        -f markdown+footnotes                           \
+        -f markdown+header_attributes                   \
+        -f markdown+implicit_figures                    \
+        -f markdown+inline_code_attributes              \
+        -f markdown+line_blocks                         \
+        -f markdown+link_attributes                     \
+        -f markdown+raw_tex                             \
+        -f markdown+space_in_atx_header                 \
+        ${output_toc_page}                              \
+        ${output_toc_depth}                             \
+        --standalone                                    \
+        --to=latex                                      \
+        --pdf-engine=pdflatex                           \
+        --atx-headers                                   \
+        --top-level-division=chapter                    \
+        --listings                                      \
         > "${OUTPUT_LATEX}"
 
     if [ $? -eq 0 ]; then
@@ -699,43 +668,44 @@ fi
 
 if [ ${proceed_pdf_gen} -eq 1 ]; then
     echo_debug "Converting markdown files to ${OUTPUT_FILENAME}..."
-    pandoc                                          \
-        ${pp_files[@]}                              \
-        ${include_front_matter}                     \
-        ${include_back_matter}                      \
-        --resource-path=.:${INPUT_DIR}              \
-        --template="${TEMPLATE_FILE}"               \
-        ${output_draft}                             \
-        ${output_softcopy}                          \
-        ${output_papersize}                         \
-        ${output_font_size}                         \
-        ${output_before_title_rule}                 \
-        ${output_after_title_rule}                  \
-        ${output_copyright_page}                    \
-        ${output_lot_page}                          \
-        ${output_lof_page}                          \
-        ${output_show_frame}                        \
-        -f markdown+blank_before_blockquote         \
-        -f markdown+blank_before_header             \
-        -f markdown+escaped_line_breaks             \
-        -f markdown+fancy_lists                     \
-        -f markdown+fenced_code_blocks              \
-        -f markdown+footnotes                       \
-        -f markdown+header_attributes               \
-        -f markdown+implicit_figures                \
-        -f markdown+inline_code_attributes          \
-        -f markdown+line_blocks                     \
-        -f markdown+link_attributes                 \
-        -f markdown+raw_tex                         \
-        -f markdown+space_in_atx_header             \
-        ${output_toc_page}                          \
-        ${output_toc_depth}                         \
-        --standalone                                \
-        --to=latex                                  \
-        --output=${OUTPUT_FILENAME}                 \
-        --pdf-engine=pdflatex                       \
-        --atx-headers                               \
-        --top-level-division=chapter                \
+
+    pandoc                                              \
+        ${pp_files[@]}                                  \
+        ${include_front_matter}                         \
+        ${include_back_matter}                          \
+        --resource-path=${INPUT_DIR}:${TEMPLATE_DIR}    \
+        --template="${TEMPLATE_FILE}"                   \
+        ${output_draft}                                 \
+        ${output_softcopy}                              \
+        ${output_papersize}                             \
+        ${output_font_size}                             \
+        ${output_before_title_rule}                     \
+        ${output_after_title_rule}                      \
+        ${output_copyright_page}                        \
+        ${output_lot_page}                              \
+        ${output_lof_page}                              \
+        ${output_show_frame}                            \
+        -f markdown+blank_before_blockquote             \
+        -f markdown+blank_before_header                 \
+        -f markdown+escaped_line_breaks                 \
+        -f markdown+fancy_lists                         \
+        -f markdown+fenced_code_blocks                  \
+        -f markdown+footnotes                           \
+        -f markdown+header_attributes                   \
+        -f markdown+implicit_figures                    \
+        -f markdown+inline_code_attributes              \
+        -f markdown+line_blocks                         \
+        -f markdown+link_attributes                     \
+        -f markdown+raw_tex                             \
+        -f markdown+space_in_atx_header                 \
+        ${output_toc_page}                              \
+        ${output_toc_depth}                             \
+        --standalone                                    \
+        --to=latex                                      \
+        --output=${OUTPUT_FILENAME}                     \
+        --pdf-engine=pdflatex                           \
+        --atx-headers                                   \
+        --top-level-division=chapter                    \
         --listings
 
     if [ -e "${OUTPUT_FILENAME}" ]; then
@@ -759,9 +729,9 @@ fi
 #     FILE. All messages above DEBUG level will be written,
 #     regardless of verbosity settings (--verbose, --quiet).
 
-popd # ${TEMPLATE_DIR}
+popd # ${INPUT_DIR}
 
-echo_debug "Deleting matter intermediate files:"
+echo_debug "Deleting mainmatter intermediate files:"
 for file in "${pp_files[@]}"; do
     if [ ${flag_debug_mode} -eq 0 ]; then
         rm -f "${file}"
