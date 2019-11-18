@@ -451,13 +451,13 @@ echo_debug "Backmatter: ${#source_bm_files[@]}"
 
 # Pre-process TeX files
 
-# TODO: Use variable for .tex-images directory
+# TODO: Use variable for tex-images directory
 
 if [ ${output_image_generate} -eq 1 ]; then
     echo_debug "Preprocessing TeX files..."
     pushd "${INPUT_DIR}"
-    if [ ! -d ".tex-images" ]; then
-        mkdir ".tex-images"
+    if [ ! -d "tex-images" ]; then
+        mkdir "tex-images"
     fi
     for file in "${tex_files[@]}"; do
         echo_debug "  ${INPUT_DIR}/${file}"
@@ -473,10 +473,10 @@ if [ ${output_image_generate} -eq 1 ]; then
         # as a work around.
         # pdfTeX 3.14159265-2.6-1.40.20 (TeX Live 2019/Arch Linux)
         basefilename="${file%.*}"
-        mv -f "${basefilename}.aux" ./.tex-images/
-        mv -f "${basefilename}.log" ./.tex-images/
-        mv -f "${basefilename}.pdf" ./.tex-images/
-        mv -f "${basefilename}.png" ./.tex-images/
+        mv -f "${basefilename}.aux" ./tex-images/
+        mv -f "${basefilename}.log" ./tex-images/
+        mv -f "${basefilename}.pdf" ./tex-images/
+        mv -f "${basefilename}.png" ./tex-images/
     done
     echo_debug "Deleting intermediate files:"
     popd # ${INPUT_DIR}
@@ -590,8 +590,8 @@ if [ ${output_backmatter_generate} == 1 ]; then
 fi
 
 # Pre-process mainmatter markdown files
-
-# TODO: What is this images directory for?
+# Create the images directory where pp will place the generated
+# image files. The directory will be deleted after processing.
 
 echo_debug "Preprocessing markdown files..."
 pushd "${INPUT_DIR}"
@@ -756,12 +756,12 @@ done
 pushd "${INPUT_DIR}"
 if [ ${flag_debug_mode} -eq 0 ]; then
     if [ -d "images" ]; then
-        rmdir "images"
+        rm -rf "images"
     fi
 fi
 if [ ${flag_debug_mode} -eq 0 ]; then
-    if [ -d ".tex-images" ]; then
-        rm -rf "./.tex-images"
+    if [ -d "tex-images" ]; then
+        rm -rf "tex-images"
     fi
 fi
 popd # ${INPUT_DIR}
