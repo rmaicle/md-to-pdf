@@ -34,6 +34,13 @@ $(printf '                      %s\n' ${ARG_FONT_SIZES[@]})
   -imagex           do not generate TeX images
   -copyrightx       do not generate copyright page
   -tocx             do not generate table of contents
+  -tocdepth level   set the number of levels deep to include in the
+                      table of contents; default is 3 (subsection);
+                        1 - chapter
+                        2 - section
+                        3 - subsection
+                        4 - paragraph
+                        5 - subparagraph
   -lotx             do not generate list of tables
   -lofx             do not generate list of figures
   -frontmatterx     do not generate user-supplied frontmatter contents
@@ -98,7 +105,8 @@ output_after_title_rule=""
 output_show_frame=""
 output_image_generate=1
 output_copyright_page="--metadata=with_copyright:true"
-output_toc_page="--metadata=toc:true"
+output_toc_page="--toc"
+output_toc_depth="--toc-depth=3"
 output_lot_page="--metadata=lot:true"
 output_lof_page="--metadata=lof:true"
 output_frontmatter_generate=1
@@ -187,6 +195,11 @@ fi
 if [[ $# -gt 0 ]] && [[ "${1}" = "-tocx" ]]; then
     shift
     output_toc_page=""
+fi
+
+if [[ $# -gt 0 ]] && [[ "${1}" = "-tocdepth" ]]; then
+    output_toc_depth="--toc-depth=${2}"
+    shift 2
 fi
 
 if [[ $# -gt 0 ]] && [[ "${1}" = "-lotx" ]]; then
@@ -489,7 +502,6 @@ if [ ${output_frontmatter_generate} == 1 ]; then
             ${output_softcopy}                          \
             ${output_papersize}                         \
             ${output_font_size}                         \
-            ${output_toc_page}                          \
             ${output_show_frame}                        \
             -f markdown+blank_before_blockquote         \
             -f markdown+blank_before_header             \
@@ -504,6 +516,8 @@ if [ ${output_frontmatter_generate} == 1 ]; then
             -f markdown+link_attributes                 \
             -f markdown+raw_tex                         \
             -f markdown+space_in_atx_header             \
+            ${output_toc_page}                          \
+            ${output_toc_depth}                         \
             --to=latex                                  \
             --pdf-engine=pdflatex                       \
             --atx-headers                               \
@@ -542,7 +556,6 @@ if [ ${output_backmatter_generate} == 1 ]; then
             ${output_softcopy}                          \
             ${output_papersize}                         \
             ${output_font_size}                         \
-            ${output_toc_page}                          \
             ${output_show_frame}                        \
             -f markdown+blank_before_blockquote         \
             -f markdown+blank_before_header             \
@@ -557,6 +570,8 @@ if [ ${output_backmatter_generate} == 1 ]; then
             -f markdown+link_attributes                 \
             -f markdown+raw_tex                         \
             -f markdown+space_in_atx_header             \
+            ${output_toc_page}                          \
+            ${output_toc_depth}                         \
             --to=latex                                  \
             --pdf-engine=pdflatex                       \
             --atx-headers                               \
@@ -618,7 +633,6 @@ if [ ${output_latex} -eq 1 ]; then
         ${output_papersize}                         \
         ${output_font_size}                         \
         ${output_copyright_page}                    \
-        ${output_toc_page}                          \
         ${output_lot_page}                          \
         ${output_lof_page}                          \
         ${output_show_frame}                        \
@@ -635,6 +649,8 @@ if [ ${output_latex} -eq 1 ]; then
         -f markdown+link_attributes                 \
         -f markdown+raw_tex                         \
         -f markdown+space_in_atx_header             \
+        ${output_toc_page}                          \
+        ${output_toc_depth}                         \
         --standalone                                \
         --to=latex                                  \
         --pdf-engine=pdflatex                       \
@@ -681,7 +697,6 @@ if [ ${proceed_pdf_gen} -eq 1 ]; then
         ${output_before_title_rule}                 \
         ${output_after_title_rule}                  \
         ${output_copyright_page}                    \
-        ${output_toc_page}                          \
         ${output_lot_page}                          \
         ${output_lof_page}                          \
         ${output_show_frame}                        \
@@ -698,6 +713,8 @@ if [ ${proceed_pdf_gen} -eq 1 ]; then
         -f markdown+link_attributes                 \
         -f markdown+raw_tex                         \
         -f markdown+space_in_atx_header             \
+        ${output_toc_page}                          \
+        ${output_toc_depth}                         \
         --standalone                                \
         --to=latex                                  \
         --output=${OUTPUT_FILENAME}                 \
