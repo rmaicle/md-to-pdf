@@ -36,9 +36,10 @@ $(printf '                      %s\n' ${ARG_FONT_SIZES[@]})
   -tocx             do not generate table of contents
   -tocdepth level   set the number of levels deep to include in the
                       table of contents; default is 3 (subsection);
-                        1 - chapter
-                        2 - section
-                        3 - subsection
+                        0 - chapter
+                        1 - section
+                        2 - subsection
+                        3 - subsubsection
                         4 - paragraph
                         5 - subparagraph
   -lotx             do not generate list of tables
