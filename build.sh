@@ -367,16 +367,19 @@ if [ -e "${INPUT_DIR}/image.txt" ]; then
     echo "Checking existence of TeX files:"
     readarray -t temp_tex_files <"${INPUT_DIR}/image.txt"
     for file in "${temp_tex_files[@]}"; do
-        #exclude_marker=${file:0:2}
-        if [[ ! -z "${file}" ]] && [[ "${file:0:2}" != "x " ]]; then
-            if [ ! -e "${INPUT_DIR}/${file}" ]; then
-                echo "  Missing TeX file: ${INPUT_DIR}/${file}"
-                exit 1
-            else
-                echo "  Found: ${file}"
-                tex_files+=("${file}")
-            fi
+        if [[ -z "${file}" ]]; then
+            continue
         fi
+        if [[ "${file:0:2}" == "x " ]]; then
+            echo "  Skip:  ${file:2}"
+            continue
+        fi
+        if [ ! -e "${INPUT_DIR}/${file}" ]; then
+            echo "  Missing TeX file: ${INPUT_DIR}/${file}"
+            exit 1
+        fi
+        echo "  Found: ${file}"
+        tex_files+=("${INPUT_DIR}/${file}")
     done
 fi
 
@@ -446,23 +449,39 @@ if [ ${output_image_generate} -eq 1 ]; then
         mkdir "tex-images"
     fi
     for file in "${tex_files[@]}"; do
-        echo_debug "  ${INPUT_DIR}/${file}"
+        if [[ -z "${file}" ]]; then
+            continue
+        fi
+        echo_debug "  ${file}"
+        # Get file directory so we can cd to it.
+        # It seems that pdflatex must be in the same directory as the
+        # input files.
+        tex_file_dir=$(dirname ${file})
+        pushd ${tex_file_dir}
         # Argument -draftmode tells pdflatex not to generate PDF file.
-        # Argument -output-directory is where the outputs are sent.
-        pdflatex                            \
-            -shell-escape                   \
-            -draftmode                      \
-            ${file}
+        pdflatex                                        \
+            -shell-escape                               \
+            -draftmode                                  \
+            "${file}"
+        # WORKAROUND: [pdfTeX 3.14159265-2.6-1.40.20]
+        #
         # There seems to be a bug in -output-directory option.
         # Files are not sent to the specified output directory so we
         # are going to manually copy the files into that directory
         # as a work around.
-        # pdfTeX 3.14159265-2.6-1.40.20 (TeX Live 2019/Arch Linux)
         basefilename="${file%.*}"
-        mv -f "${basefilename}.aux" ./tex-images/
-        mv -f "${basefilename}.log" ./tex-images/
-        mv -f "${basefilename}.pdf" ./tex-images/
-        mv -f "${basefilename}.png" ./tex-images/
+
+        convert                     \
+            "${basefilename}.png"   \
+            -trim                   \
+            +repage                 \
+            "${basefilename}.png"
+
+        mv -f "${basefilename}.aux" ${INPUT_DIR}/tex-images/
+        mv -f "${basefilename}.log" ${INPUT_DIR}/tex-images/
+        mv -f "${basefilename}.pdf" ${INPUT_DIR}/tex-images/
+        mv -f "${basefilename}.png" ${INPUT_DIR}/tex-images/
+        popd
     done
     echo_debug "Deleting intermediate files:"
     popd # ${INPUT_DIR}
@@ -611,6 +630,7 @@ if [ ${output_latex} -eq 1 ]; then
         ${include_front_matter}                         \
         ${include_back_matter}                          \
         --resource-path=${INPUT_DIR}:${TEMPLATE_DIR}    \
+        --resource-path=${INPUT_DIR}/tex-images         \
         --template="${TEMPLATE_FILE}"                   \
         ${output_draft}                                 \
         ${output_softcopy}                              \
@@ -674,6 +694,7 @@ if [ ${proceed_pdf_gen} -eq 1 ]; then
         ${include_front_matter}                         \
         ${include_back_matter}                          \
         --resource-path=${INPUT_DIR}:${TEMPLATE_DIR}    \
+        --resource-path=${INPUT_DIR}/tex-images         \
         --template="${TEMPLATE_FILE}"                   \
         ${output_draft}                                 \
         ${output_softcopy}                              \
