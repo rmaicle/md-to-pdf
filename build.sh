@@ -290,7 +290,7 @@ if [ $# -gt 0 ]; then
         else
             pushd "${TEMPLATE_DIR}"
             if [ -e "${TEMPLATE_DIR}/${arg_template_file}" ]; then
-                TEMPLATE_FILE="${arg_template_file}"
+                TEMPLATE_FILE="${TEMPLATE_DIR}/${arg_template_file}"
             else
                 echo "Error: Template file does not exist: ${arg_template_file}"
                 exit 1
