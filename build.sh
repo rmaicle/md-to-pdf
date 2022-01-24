@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+declare -r PROGRAM=pandoc-latest
+
 declare INPUT_FILE="filelist.txt"
 
 #
@@ -349,6 +351,8 @@ if [[ $# -gt 0 ]] && [[ "${1}" == "-of" ]]; then
     fi
 fi
 
+echo "Using $(${PROGRAM} --version | head -n 1)"
+
 if [ ${flag_debug_mode} -eq 1 ]; then
     echo "Script Dir:    ${SCRIPT_DIR}"
     echo "Current Dir:   ${CURRENT_DIR}"
@@ -503,7 +507,7 @@ if [ ${output_frontmatter_generate} == 1 ]; then
         echo_debug "  ${file}"
         basefilename="${file%.*}"
         pp_fm_files+=("${basefilename}.tex")
-        pandoc                                          \
+        ${PROGRAM}                                      \
             ${file}                                     \
             ${output_draft}                             \
             ${output_softcopy}                          \
@@ -558,7 +562,7 @@ if [ ${output_backmatter_generate} == 1 ]; then
         pp -img=${INPUT_DIR}/images ${file} > "${ppfile}"
         basefilename="${ppfile%.*}"
         pp_bm_files+=("${basefilename}.tex")
-        pandoc                                          \
+        ${PROGRAM}                                      \
             ${ppfile}                                   \
             ${output_draft}                             \
             ${output_softcopy}                          \
@@ -628,7 +632,7 @@ if [ ${output_latex} -eq 1 ]; then
     echo_debug "Creating Tex/LaTeX file ${OUTPUT_LATEX}..."
     rm -f "${OUTPUT_LATEX}"
 
-    pandoc                                              \
+    ${PROGRAM}                                          \
         ${pp_files[@]}                                  \
         ${include_front_matter}                         \
         ${include_back_matter}                          \
@@ -692,7 +696,7 @@ fi
 if [ ${proceed_pdf_gen} -eq 1 ]; then
     echo_debug "Converting markdown files to ${OUTPUT_FILENAME}..."
 
-    pandoc                                              \
+    ${PROGRAM}                                          \
         ${pp_files[@]}                                  \
         ${include_front_matter}                         \
         ${include_back_matter}                          \
