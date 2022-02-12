@@ -394,14 +394,16 @@ fi
 cat << EOF
 Using $(${PROGRAM} --version | head -n 1)
 --------------------------------------------
+Current directory: ${CURRENT_DIR}
+
 Input directory: ${v_input_dir}
-Input markdown file: ${arg_markdown_file}
+Input markdown file: $(basename ${arg_markdown_file})
 Input image file: ${arg_image_file}
 Template directory: $(dirname ${arg_template_file})
 Template file: $(basename ${arg_template_file})
 Output directory: ${arg_output_dir}
 Output LaTeX file: ${v_output_latex_file}
-Output PDF file: ${arg_output_file}
+Output PDF file: ${v_output_file%.*}
 
 Paper size: ${PANDOC_PAPER_SIZES[${arg_paper_size}]}
 Font size: ${arg_font_size}
