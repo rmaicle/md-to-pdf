@@ -906,6 +906,9 @@ if [ ${v_proceed_pdf_gen} -eq 1 ]; then
     fi
     [ -f "${v_base_filename}.toc" ] && rm "${v_base_filename}.toc"
 fi
+
+[[ -d "tex-images" ]] && rm -rf  "tex-images"
+
 popd
 
 
