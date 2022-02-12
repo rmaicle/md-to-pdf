@@ -841,7 +841,7 @@ fi
 
 if [ ${v_proceed_pdf_gen} -eq 1 ]; then
     echo "Converting markdown files to ${v_output_file}..."
-    rm -f "final.tex"
+    # rm -f "final.tex"
     ${PROGRAM}                                          \
         -L ${HOME_DIR}/.local/bin/panda.lua             \
         ${v_source_files[@]}                            \
@@ -885,8 +885,8 @@ if [ ${v_proceed_pdf_gen} -eq 1 ]; then
         --markdown-headings=atx                         \
         --top-level-division=chapter                    \
         --number-sections                               \
-        --listings                                      \
-        > "final.tex"
+        --listings
+        # > "final.tex"
 
     if [ -f "${v_output_file}" ]; then
         if [[ ! "$(pwd)" == "${arg_output_dir}" ]]; then
