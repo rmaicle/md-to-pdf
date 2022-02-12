@@ -720,26 +720,6 @@ fi
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Pre-process mainmatter markdown files
 # Create the images directory where pp will place the generated
 # image files. The directory will be deleted after processing.
