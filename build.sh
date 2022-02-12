@@ -557,12 +557,15 @@ echo "Found/skipped files: ${v_found_count}/${v_skip_count}"
 
 
 
+pushd "${v_input_dir}"
+
+
+
 # Pre-process TeX files
 if [ ${flag_no_images} -eq 1 ]; then
     echo "Skipping preprocessing of TeX files."
 else
     echo "Preprocessing TeX files..."
-    pushd "${v_input_dir}"
     # Create temporary directory for pre-processed image files
     [[ ! -d "tex-images" ]] && mkdir "tex-images"
     for file in "${v_tex_files[@]}"; do
@@ -615,7 +618,6 @@ else
         [ -e "${basefilename}.png" ] && mv -f "${basefilename}.png" ${v_input_dir}/tex-images/
         popd
     done
-    popd # ${v_input_dir}
 fi
 # unset v_tex_file_dir
 
@@ -628,7 +630,6 @@ if [ ${flag_no_frontmatter} -eq 1 ]; then
     echo "Skipping preprocessing frontmatter markdown files."
 else
     echo "Preprocessing frontmatter markdown files..."
-    pushd "${v_input_dir}"
     for file in "${v_source_fm_files[@]}"; do
         basefilename="${file%.*}"
         if [ -f "${basefilename}.tex" ]; then
@@ -666,7 +667,6 @@ else
             --listings                                  \
             > "${basefilename}.tex"
     done
-    popd # ${v_input_dir}
 fi
 
 
@@ -678,7 +678,6 @@ if [ ${flag_no_backmatter} -eq 1 ]; then
     echo "Skipping preprocessing backmatter markdown files."
 else
     echo "Preprocessing backmatter markdown files..."
-    pushd "${v_input_dir}"
     for file in "${v_source_bm_files[@]}"; do
         basefilename="${file%.*}"
         if [ -f "${basefilename}.tex" ]; then
@@ -716,7 +715,6 @@ else
             --listings                                  \
             > "${basefilename}.tex"
     done
-    popd # ${v_input_dir}
 fi
 
 
@@ -771,7 +769,6 @@ fi
 # Set to 0 to abort PDF generation.
 v_proceed_pdf_gen=1
 
-pushd "${v_input_dir}"
 if [ ${flag_latex_output} -eq 1 ]; then
     echo "Creating Tex/LaTeX file ${v_output_latex_file}..."
     rm -f "${v_output_latex_file}"
