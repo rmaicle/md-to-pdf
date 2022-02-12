@@ -25,7 +25,6 @@ fi
 
 declare flag_vmtouch_found=0
 if command -v vmtouch &> /dev/null ; then
-    echo "Using vmtouch."
     flag_vmtouch_found=1
     v_pandoc_path="$(command -v pandoc)/pandoc"
     vmtouch -q -t "${v_pandoc_path}"
@@ -393,7 +392,6 @@ fi
 
 cat << EOF
 Using $(${PROGRAM} --version | head -n 1)
---------------------------------------------
 Current directory: ${CURRENT_DIR}
 
 Input directory: ${v_input_dir}
@@ -419,7 +417,6 @@ No List of Tables: ${flag_no_lot}
 No Backmatter: ${flag_no_backmatter}
 No Frontmatter: ${flag_no_frontmatter}
 No Copyright: ${flag_no_copyright}
---------------------------------------------
 EOF
 
 
@@ -823,7 +820,6 @@ if [ ${v_proceed_pdf_gen} -eq 1 ]; then
     echo "Converting markdown files to ${v_output_file}..."
     # Pandoc 2.11.2 deprecates --atx-headers,
     # use --markdown-headings=atx instead.
-    # rm -f "final.tex"
     ${PROGRAM}                                          \
         -L ${HOME_DIR}/.local/bin/panda.lua             \
         ${v_source_files[@]}                            \
@@ -866,7 +862,6 @@ if [ ${v_proceed_pdf_gen} -eq 1 ]; then
         --top-level-division=chapter                    \
         --number-sections                               \
         --listings
-        # > "final.tex"
 
     if [ -f "${v_output_file}" ]; then
         if [[ ! "$(pwd)" == "${arg_output_dir}" ]]; then
