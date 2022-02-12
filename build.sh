@@ -18,6 +18,25 @@ declare CURRENT_DIR=$(pwd)
 
 declare -r PROGRAM="pandoc"
 
+
+
+if ! command -v pandoc &> /dev/null ; then
+    echo -e "Pandoc not found.\nDownload program from pandoc.org"
+    exit 1
+fi
+
+declare flag_vmtouch_found=0
+if command -v vmtouch &> /dev/null ; then
+    echo "Using vmtouch."
+    flag_vmtouch_found=1
+    v_pandoc_path="$(command -v pandoc)/pandoc"
+    vmtouch -q -t "${v_pandoc_path}"
+    vmtouch -q -t "/usr/bin/pdflatex"
+fi
+
+
+
+
 # Pandoc 2.11.2 deprecates --atx-headers, use --markdown-headings=atx instead.
 
 declare DEFAULT_MARKDOWN_CONTENT_FILE="markdownlist.txt"
