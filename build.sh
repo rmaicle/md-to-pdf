@@ -895,6 +895,16 @@ if [ ${v_proceed_pdf_gen} -eq 1 ]; then
     else
         echo "No output."
     fi
+
+    v_base_filename="${v_output_file%.*}"
+    [ -f "${v_base_filename}.aux" ] && rm "${v_base_filename}.aux"
+    [ -f "${v_base_filename}.lof" ] && rm "${v_base_filename}.lof"
+    [ -f "${v_base_filename}.log" ] && rm "${v_base_filename}.log"
+    [ -f "${v_base_filename}.lot" ] && rm "${v_base_filename}.lot"
+    if [ ${flag_latex_output} -eq 0 ]; then
+        [ -f "${v_base_filename}.tex" ] && rm "${v_base_filename}.tex"
+    fi
+    [ -f "${v_base_filename}.toc" ] && rm "${v_base_filename}.toc"
 fi
 popd
 
