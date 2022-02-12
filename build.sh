@@ -12,8 +12,6 @@ set -o errexit -o pipefail -o noclobber -o nounset
 declare HOME_DIR="$(eval echo ~${USER})"
 declare SCRIPTNAME=${0##*/}
 declare SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-# Default template directory
-declare TEMPLATE_DIR="/usr/local/share"
 declare CURRENT_DIR=$(pwd)
 
 declare -r PROGRAM="pandoc"
@@ -75,6 +73,7 @@ declare -a FONT_SIZES=(
     "12"
 )
 
+declare DEFAULT_TEMPLATE_DIR="/usr/local/share"
 declare DEFAULT_INPUT_DIR="${CURRENT_DIR}"
 declare DEFAULT_OUTPUT_DIR="${CURRENT_DIR}"
 declare DEFAULT_OUTPUT_FILE="output"
@@ -179,7 +178,11 @@ $(printf '                        %s point\n' ${FONT_SIZES[@]})
   --no-lof            do not generate list of figures
   --no-lot            do not generate list of tables
   --no-toc            do not generate table of contents
-  --template file     TeX/LaTeX template file
+  --template file     TeX/LaTeX template file/file path; template files
+                      is initially searched in the input directory, then
+                      in the default template directory (${DEFAULT_TEMPLATE_DIR});
+                      if argument is a relative file path, the search is
+                      relative to the input directory
   --od dir            output directory; default is current directory
   --of file           output filename appended with .pdf; default is 'output'
   --paper             paper size; default is letter
@@ -353,13 +356,7 @@ while true; do
                             fi
                             ;;
         --show-frame)       flag_show_frame=1 ; shift ;;
-        --template)         arg_template_file="${2}"
-                            if [ ! -f "${arg_template_file}" ]; then
-                                echo_error "Template file not found: ${arg_template_file}\nAborting."
-                                exit 1
-                            fi
-                            shift 2
-                            ;;
+        --template)         arg_template_file="${2}" ; shift 2 ;;
         *)                  break ;;
     esac
 done
@@ -424,18 +421,30 @@ fi
 
 
 
-declare v_template_file="$(basename ${arg_template_file})"
-declare v_template_dir="${v_input_dir}"
-if [ ! -z "$(dirname ${arg_template_file})" ]; then
-    v_template_dir="$(dirname ${arg_template_file})"
-fi
-# Create absolute file path for the template file
-if [ -f "${v_template_dir}/${v_template_file}" ]; then
-    arg_template_file="${v_template_dir}/${v_template_file}"
+# Template file argument may be a filename or a filename with a directory
+if [[ $(dirname "${arg_template_file}") == "." ]]; then
+    if [ -f "${v_input_dir}/${arg_template_file}" ]; then
+        arg_template_file="${v_input_dir}/${arg_template_file}"
+    else
+        if [ -f "${DEFAULT_TEMPLATE_DIR}/${arg_template_file}" ]; then
+            arg_template_file="${DEFAULT_TEMPLATE_DIR}/${arg_template_file}"
+        else
+            echo_error "Template file: ${2}\n  Not found: ${DEFAULT_TEMPLATE_DIR}\n  Not found: ${v_input_dir}\nAborting."
+            exit 1
+        fi
+    fi
 else
-    echo "Error: Template file does not exist: ${v_template_dir}/${v_template_file}"
-    exit 1
+    if [ ! ${arg_template_file} != ${arg_template_file#/} ]; then
+        if [ ! -f "${CURRENT_DIR}/${arg_template_file}" ]; then
+            echo_error "Template file not found: ${CURRENT_DIR}/${arg_template_file}\nAborting."
+            exit 1
+        fi
+        pushd "$(dirname ${CURRENT_DIR}/${arg_template_file})"
+        arg_template_file="$(pwd)/$(basename ${arg_template_file})"
+        popd
+    fi
 fi
+
 
 
 declare v_output_latex_file="${arg_output_file}.${DEFAULT_LATEX_EXT}"
@@ -459,8 +468,8 @@ Using $(${PROGRAM} --version | head -n 1)
 Input directory: ${v_input_dir}
 Input markdown file: ${arg_markdown_file}
 Input image file: ${arg_image_file}
-Template directory: ${v_template_dir}
-Template file: ${arg_template_file}
+Template directory: $(dirname ${arg_template_file})
+Template file: $(basename ${arg_template_file})
 Output directory: ${arg_output_dir}
 Output LaTeX file: ${v_output_latex_file}
 Output PDF file: ${arg_output_file}
@@ -842,8 +851,8 @@ if [ ${flag_latex_output} -eq 1 ]; then
         ${v_source_files[@]}                            \
         ${v_include_front_matter}                       \
         ${v_include_back_matter}                        \
-        --resource-path=${v_input_dir}:${v_input_dir}/tex-images:${v_template_dir}    \
-        --template="${v_template_file}"                 \
+        --resource-path=${v_input_dir}:${v_input_dir}/tex-images    \
+        --template="${arg_template_file}"               \
         ${output_draft}                                 \
         ${output_papersize}                             \
         ${output_font_size}                             \
@@ -913,8 +922,8 @@ if [ ${v_proceed_pdf_gen} -eq 1 ]; then
         ${v_source_files[@]}                            \
         ${v_include_front_matter}                       \
         ${v_include_back_matter}                        \
-        --resource-path=${v_input_dir}:${v_input_dir}/tex-images:${v_template_dir}    \
-        --template="${v_template_file}"                 \
+        --resource-path=${v_input_dir}:${v_input_dir}/tex-images    \
+        --template="${arg_template_file}"               \
         ${output_draft}                                 \
         ${output_papersize}                             \
         ${output_font_size}                             \
