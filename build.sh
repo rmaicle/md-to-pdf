@@ -15,6 +15,8 @@ declare SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pw
 declare CURRENT_DIR=$(pwd)
 
 declare PROGRAM="pandoc"
+declare HEADER="Markdown to PDF Using Pandoc.
+Created by Ricardo Maicle 2019"
 
 
 
@@ -104,8 +106,7 @@ function to_lowercase() {
 #
 function show_usage() {
 cat << EOF
-Markdown to PDF Using Pandoc.
-Created by Ricardo Maicle 2019
+${HEADER}
 
 Converts the contents of markdown input file (${DEFAULT_MARKDOWN_CONTENT_FILE}) and TeX image file
 (${DEFAULT_IMAGE_CONTENT_FILE}) using a specified TeX/LaTex template file to
@@ -391,7 +392,10 @@ fi
 
 
 cat << EOF
+
+${HEADER}
 Using $(${PROGRAM} --version | head -n 1)
+
 Current directory: ${CURRENT_DIR}
 
 Input directory: ${v_input_dir}
