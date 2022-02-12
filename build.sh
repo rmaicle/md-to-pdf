@@ -493,9 +493,11 @@ else
 fi
 
 
+
 # Process markdown content file
 v_skip_count=0
 v_found_count=0
+v_base_filename=""
 v_temp_source_files=()
 v_source_files=()
 v_source_fm_files=()
@@ -550,9 +552,6 @@ for file in "${v_temp_source_files[@]}"; do
         v_source_files+=("${file}")
     fi
 done
-# unset v_base_filename
-# unset v_temp_source_files
-
 echo "Found/skipped files: ${v_found_count}/${v_skip_count}"
 
 
@@ -590,9 +589,9 @@ else
         # basefilename="${file%.*}"
 
         # Remove directory and file extension
-        basefilename=$(basename ${file})
-        basefilename="${basefilename%.*}"
-        echo "Base Filename: ${basefilename}"
+        v_base_filename=$(basename ${file})
+        v_base_filename="${v_base_filename%.*}"
+        echo "Base Filename: ${v_base_filename}"
 
         # convert                     \
         #     "${basefilename}.png"   \
@@ -619,24 +618,25 @@ else
         popd
     done
 fi
-# unset v_tex_file_dir
 
 
 
 # Pre-process frontmatter markdown files
 v_pp_fm_files=()
 v_include_front_matter=""
+v_base_filename_tex=""
 if [ ${flag_no_frontmatter} -eq 1 ]; then
     echo "Skipping preprocessing frontmatter markdown files."
 else
     echo "Preprocessing frontmatter markdown files..."
     for file in "${v_source_fm_files[@]}"; do
-        basefilename="${file%.*}"
-        if [ -f "${basefilename}.tex" ]; then
-            rm -f "${basefilename}.tex"
+        v_base_filename="${file%.*}"
+        v_base_filename_tex="${v_base_filename}.${DEFAULT_LATEX_EXT}"
+        if [ -f "${v_base_filename_tex}" ]; then
+            rm -f "${v_base_filename_tex}"
         fi
-        v_pp_fm_files+=("${basefilename}.tex")
-        v_include_front_matter+="--include-before-body=${basefilename}.tex "
+        v_pp_fm_files+=("${v_base_filename_tex}")
+        v_include_front_matter+="--include-before-body=${v_base_filename_tex} "
         ${PROGRAM}                                      \
             -L ${HOME_DIR}/.local/bin/panda.lua         \
             ${file}                                     \
@@ -665,7 +665,7 @@ else
             --markdown-headings=atx                     \
             --top-level-division=chapter                \
             --listings                                  \
-            > "${basefilename}.tex"
+            > "${v_base_filename_tex}"
     done
 fi
 
@@ -679,12 +679,13 @@ if [ ${flag_no_backmatter} -eq 1 ]; then
 else
     echo "Preprocessing backmatter markdown files..."
     for file in "${v_source_bm_files[@]}"; do
-        basefilename="${file%.*}"
-        if [ -f "${basefilename}.tex" ]; then
-            rm -f "${basefilename}.tex"
+        v_base_filename="${file%.*}"
+        v_base_filename_tex="${v_base_filename}.${DEFAULT_LATEX_EXT}"
+        if [ -f "${v_base_filename_tex}" ]; then
+            rm -f "${v_base_filename_tex}"
         fi
-        v_pp_bm_files+=("${basefilename}.tex")
-        v_include_back_matter+="--include-after-body=${basefilename}.tex "
+        v_pp_bm_files+=("${v_base_filename_tex}")
+        v_include_back_matter+="--include-after-body=${v_base_filename_tex} "
         ${PROGRAM}                                      \
             -L ${HOME_DIR}/.local/bin/panda.lua         \
             ${file}                                     \
@@ -713,7 +714,7 @@ else
             --markdown-headings=atx                     \
             --top-level-division=chapter                \
             --listings                                  \
-            > "${basefilename}.tex"
+            > "${v_base_filename_tex}"
     done
 fi
 
@@ -918,4 +919,6 @@ if [ ${flag_no_backmatter} -eq 0 ]; then
     done
 fi
 
+unset v_base_filename
+unset v_base_filename_tex
 echo "Done."
