@@ -266,7 +266,7 @@ while true; do
                             fi
                             shift 2
                             ;;
-        --help)             show_usage ; shift ;;
+        --help)             show_usage ; exit ;;
         --image)            arg_image_file="${2}"
                             shift 2
                             if [ ! -f "${arg_image_file}" ]; then
