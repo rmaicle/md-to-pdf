@@ -439,7 +439,7 @@ fi
 if [ ${flag_no_toc} -eq 1 ]; then
     output_toc_page=""
 else
-    output_toc_page="--toc"
+    output_toc_page="--table-of-contents"
 fi
 output_toc_depth="--toc-depth=${arg_toc_depth}"
 if [ ${flag_no_copyright} -eq 1 ]; then
