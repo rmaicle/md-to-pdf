@@ -611,10 +611,10 @@ else
         # Force-move .png file from ${v_input_dir}/tex-images directory
         # to current directory
 
-        [ -e "${basefilename}.aux" ] && mv -f "${basefilename}.aux" ${v_input_dir}/tex-images/
-        [ -e "${basefilename}.log" ] && mv -f "${basefilename}.log" ${v_input_dir}/tex-images/
-        [ -e "${basefilename}.pdf" ] && mv -f "${basefilename}.pdf" ${v_input_dir}/tex-images/
-        [ -e "${basefilename}.png" ] && mv -f "${basefilename}.png" ${v_input_dir}/tex-images/
+        [ -e "${v_base_filename}.aux" ] && mv -f "${v_base_filename}.aux" ${v_input_dir}/tex-images/
+        [ -e "${v_base_filename}.log" ] && mv -f "${v_base_filename}.log" ${v_input_dir}/tex-images/
+        [ -e "${v_base_filename}.pdf" ] && mv -f "${v_base_filename}.pdf" ${v_input_dir}/tex-images/
+        [ -e "${v_base_filename}.png" ] && mv -f "${v_base_filename}.png" ${v_input_dir}/tex-images/
         popd
     done
 fi
