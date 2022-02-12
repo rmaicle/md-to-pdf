@@ -460,6 +460,7 @@ else
 fi
 
 
+
 # Process image content file
 if [ ${flag_no_image} -eq 1 ]; then
     echo "Skipping image content file preprocessing."
@@ -475,16 +476,16 @@ else
         [[ -z "${file}" ]] && continue
         # Skip entries prefixed with the skip marker
         if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
-            echo "  Skipping: ${file:2}"
+            echo_yellow "  Skipping: ${file:2}"
             v_skip_count=$((${v_skip_count} + 1))
             continue
         fi
         # Check if listed file exists
         if [ ! -f "${v_input_dir}/${file}" ]; then
-            echo "  Missing TeX file: ${v_input_dir}/${file}"
+            echo_red "  Missing TeX file: ${v_input_dir}/${file}"
             exit 1
         fi
-        echo "  Found: ${file}"
+        echo_green "  Found: ${file}"
         v_found_count=$((${v_found_count} + 1))
         v_tex_files+=("${v_input_dir}/${file}")
     done
