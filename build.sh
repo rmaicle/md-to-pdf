@@ -37,7 +37,6 @@ fi
 
 
 
-# Pandoc 2.11.2 deprecates --atx-headers, use --markdown-headings=atx instead.
 
 declare DEFAULT_MARKDOWN_CONTENT_FILE="markdownlist.txt"
 declare DEFAULT_IMAGE_CONTENT_FILE="imagelist.txt"
@@ -868,6 +867,8 @@ if [ ${flag_latex_output} -eq 1 ]; then
         -f markdown+pipe_tables                         \
         -f markdown+raw_attribute                       \
         -f markdown+raw_tex                             \
+        # Pandoc 2.11.2 deprecates --atx-headers,
+        # use --markdown-headings=atx instead.
         -f markdown+space_in_atx_header                 \
         -f markdown+table_captions                      \
         ${output_toc_page}                              \
@@ -945,6 +946,8 @@ if [ ${v_proceed_pdf_gen} -eq 1 ]; then
         --to=latex                                      \
         --output=${v_output_file}                       \
         --pdf-engine=${arg_pdf_engine}                  \
+        # Pandoc 2.11.2 deprecates --atx-headers,
+        # use --markdown-headings=atx instead.
         --markdown-headings=atx                         \
         --top-level-division=chapter                    \
         --number-sections                               \
