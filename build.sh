@@ -86,50 +86,12 @@ declare DEFAULT_PREPROCESSOR_FILE_MARKER="pp-"
 
 declare flag_debug_mode=0
 
-# echo "SCRIPT_DIR: ${SCRIPT_DIR}"
-# echo "CURRENT_DIR: ${CURRENT_DIR}"
+
 
 source /usr/local/bin/dirstack.sh
 source /usr/local/bin/echo.sh
 
-# #
-# # Display warning message in yellow
-# #
-# echo_warn() {
-#     local COLOR_IYELLOW='\033[0;93m'
-#     local COLOR_OFF='\033[0m'
-#     echo -e "${COLOR_IYELLOW}Error: ${@}${COLOR_OFF}"
-# }
 
-# #
-# # Display error message in red
-# #
-# echo_error() {
-#     local COLOR_RED='\033[0;31m'
-#     local COLOR_OFF='\033[0m'
-#     echo -e "${COLOR_RED}Error: ${@}${COLOR_OFF}"
-# }
-
-# #
-# # Display message if debugging flag is set
-# #
-# echo_debug() {
-#     [[ ${flag_debug_mode} -gt 0 ]] && echo "Debug: ${@}"
-# }
-
-# #
-# # Silent pushd
-# #
-# pushd() {
-#     command pushd "$@" > /dev/null
-# }
-
-# #
-# # Silent popd
-# #
-# popd() {
-#     command popd "$@" > /dev/null
-# }
 
 #
 # Convert specified string argument to lowercase
@@ -237,7 +199,6 @@ arg_output_file="${DEFAULT_OUTPUT_FILE}"
 
 
 
-
 flag_draft=0
 flag_show_frame=0
 flag_latex_output=0
@@ -275,7 +236,6 @@ OPTIONS_LONG+=",template:"
 OPTIONS_LONG+=",od:"
 OPTIONS_LONG+=",of:"
 OPTIONS_LONG+=",paper:"
-# OPTIONS_LONG+=",softcopy"
 OPTIONS_LONG+=",show-frame"
 OPTIONS_LONG+=",toc-depth:"
 OPTIONS_TEMP=$(getopt               \
@@ -288,7 +248,6 @@ eval set -- "${OPTIONS_TEMP}"
 
 
 while true; do
-    echo "arg: ${1}"
     case "${1}" in
         --debug)            flag_debug_mode=1 ; shift 2 ;;
         --draft)            flag_draft=1 ; shift ;;
@@ -362,33 +321,6 @@ while true; do
 done
 
 
-cat << EOF
-Arguments and defaults:
---------------------------------------------
-Markdown file: ${arg_markdown_file}
-Image file: ${arg_image_file}
-Template file: ${arg_template_file}
-Output directory: ${arg_output_dir}
-Output file: ${arg_output_file}
-
-Paper size: ${arg_paper_size}
-Font size: ${arg_font_size}
-PDF Engine: ${arg_pdf_engine}
-ToC Depth: ${arg_toc_depth}
-
-Draft: ${flag_draft}
-Show frame: ${flag_show_frame}
-LaTeX output: ${flag_latex_output}
-No Table of Contents: ${flag_no_toc}
-No List of Figures: ${flag_no_lof}
-No List of Tables: ${flag_no_lot}
-No Backmatter: ${flag_no_backmatter}
-No Frontmatter: ${flag_no_frontmatter}
-No Copyright: ${flag_no_copyright}
---------------------------------------------
-EOF
-
-
 
 declare v_input_dir="${DEFAULT_INPUT_DIR}"
 
@@ -414,9 +346,6 @@ if [ -f "${v_input_dir}/${v_image_file}" ]; then
     arg_image_file="${v_input_dir}/${v_image_file}"
 else
     flag_no_image=1
-#     echo "Error: Image file does not exist: ${v_input_dir}/${v_image_file}"
-#     echo "Current directory: $(pwd)"
-#     exit 1
 fi
 
 
@@ -621,10 +550,7 @@ done
 # unset v_base_filename
 # unset v_temp_source_files
 
-# echo "Skipped files: ${v_skip_count}"
 echo "Found/skipped files: ${v_found_count}/${v_skip_count}"
-# echo "Frontmatter: ${v_source_fm_files[@]}"
-# echo "Backmatter: ${v_source_bm_files[@]}"
 
 
 
@@ -913,8 +839,6 @@ fi
 
 
 if [ ${v_proceed_pdf_gen} -eq 1 ]; then
-    # echo "Directory: $(pwd)"
-    # echo "Files: ${v_source_files[@]}"
     echo "Converting markdown files to ${v_output_file}..."
     rm -f "final.tex"
     ${PROGRAM}                                          \
@@ -964,7 +888,6 @@ if [ ${v_proceed_pdf_gen} -eq 1 ]; then
         > "final.tex"
 
     if [ -f "${v_output_file}" ]; then
-        # echo "Output: ${v_output_file}"
         if [[ ! "$(pwd)" == "${arg_output_dir}" ]]; then
             mv "${v_output_file}" "${arg_output_file}"
         fi
@@ -978,10 +901,7 @@ popd
 
 echo "Cleaning up..."
 
-# [ ${flag_debug_mode} -eq 0 ] && echo "Deleting frontmatter intermediate files:"
-# [ ${flag_debug_mode} -eq 1 ] && echo "Keeping frontmatter intermediate files:"
 if [ ${flag_no_frontmatter} -eq 0 ]; then
-    # echo "${v_pp_fm_files[@]}"
     for file in "${v_pp_fm_files[@]}"; do
         if [ ${flag_debug_mode} -eq 0 ]; then
             rm -f "${file}"
@@ -989,10 +909,7 @@ if [ ${flag_no_frontmatter} -eq 0 ]; then
     done
 fi
 
-# [ ${flag_debug_mode} -eq 0 ] && echo "Deleting backmatter intermediate files:"
-# [ ${flag_debug_mode} -eq 1 ] && echo "Keeping backmatter intermediate files:"
 if [ ${flag_no_backmatter} -eq 0 ]; then
-    # echo "${v_pp_bm_files[@]}"
     for file in "${v_pp_bm_files[@]}"; do
         if [ ${flag_debug_mode} -eq 0 ]; then
             rm -f "${file}"
