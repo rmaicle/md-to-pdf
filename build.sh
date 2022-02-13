@@ -822,7 +822,7 @@ fi
 
 
 
-if [ ${v_proceed_pdf_gen} -eq 1 ]; then
+if [ ${flag_latex_output} -eq 0 ]; then
     echo "Converting markdown files to ${v_output_file}..."
     # Pandoc 2.11.2 deprecates --atx-headers,
     # use --markdown-headings=atx instead.
