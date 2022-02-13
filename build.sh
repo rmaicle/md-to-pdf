@@ -322,6 +322,13 @@ done
 
 
 
+cat << EOF
+${HEADER}
+
+EOF
+
+
+
 declare v_input_dir="${DEFAULT_INPUT_DIR}"
 
 declare v_markdown_file="$(basename ${arg_markdown_file})"
@@ -392,12 +399,7 @@ fi
 
 
 cat << EOF
-
-${HEADER}
-Using $(${PROGRAM} --version | head -n 1)
-
 Current directory: ${CURRENT_DIR}
-
 Input directory: ${v_input_dir}
 Input markdown file: $(basename ${arg_markdown_file})
 Input image file: ${arg_image_file}
@@ -406,10 +408,10 @@ Template file: $(basename ${arg_template_file})
 Output directory: ${arg_output_dir}
 Output LaTeX file: ${v_output_latex_file}
 Output PDF file: ${v_output_file%.*}
+PDF Engine: ${arg_pdf_engine}
 
 Paper size: ${PANDOC_PAPER_SIZES[${arg_paper_size}]}
 Font size: ${arg_font_size}
-PDF Engine: ${arg_pdf_engine}
 ToC Depth: ${arg_toc_depth}
 
 Draft: ${flag_draft}
@@ -421,6 +423,8 @@ No List of Tables: ${flag_no_lot}
 No Backmatter: ${flag_no_backmatter}
 No Frontmatter: ${flag_no_frontmatter}
 No Copyright: ${flag_no_copyright}
+
+Using $(${PROGRAM} --version | head -n 1)
 EOF
 
 
