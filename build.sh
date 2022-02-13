@@ -136,17 +136,17 @@ $(printf '                        %s point\n' ${FONT_SIZES[@]})
   --no-lof            do not generate list of figures
   --no-lot            do not generate list of tables
   --no-toc            do not generate table of contents
-  --template file     TeX/LaTeX template file/file path; template files
-                      is initially searched in the input directory, then
-                      in the default template directory (${DEFAULT_TEMPLATE_DIR});
-                      if argument is a relative file path, the search is
-                      relative to the input directory
   --od dir            output directory; default is current directory
   --of file           output filename appended with .pdf; default is 'output'
   --paper             paper size; default is letter
 $(printf '                        %s\n' ${PAPER_SIZES[@]})
   --softcopy          generate E-book format PDF document
   --show-frame        show page margins
+  --template file     TeX/LaTeX template file/file path; template files
+                      is initially searched in the input directory, then
+                      in the default template directory (${DEFAULT_TEMPLATE_DIR});
+                      if argument is a relative file path, the search is
+                      relative to the input directory
   --toc-depth level   set the number of levels deep to include in the
                       table of contents; default is ${DEFAULT_TOC_DEPTH};
                         0 - chapter
@@ -228,11 +228,11 @@ OPTIONS_LONG+=",no-images"
 OPTIONS_LONG+=",no-lof"
 OPTIONS_LONG+=",no-lot"
 OPTIONS_LONG+=",no-toc"
-OPTIONS_LONG+=",template:"
 OPTIONS_LONG+=",od:"
 OPTIONS_LONG+=",of:"
 OPTIONS_LONG+=",paper:"
 OPTIONS_LONG+=",show-frame"
+OPTIONS_LONG+=",template:"
 OPTIONS_LONG+=",toc-depth:"
 OPTIONS_TEMP=$(getopt               \
     --options ${OPTIONS_SHORT}      \
@@ -798,6 +798,8 @@ if [ ${flag_latex_output} -eq 1 ]; then
         --listings                                      \
         > "${v_output_latex_file}"
 
+    echo -e "\nEnd of Tex/LaTeX file.
+    "
     [[ $? -eq 0 ]] && v_proceed_pdf_gen=1
 
     if [ ${v_proceed_pdf_gen} -eq 1 ]; then
