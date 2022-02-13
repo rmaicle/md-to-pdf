@@ -26,7 +26,7 @@ Copyright (C) 2019-2022 Ricardo Maicle"
 
 
 if ! command -v pandoc &> /dev/null ; then
-    echo -e "Pandoc not found.\nDownload program from pandoc.org"
+    echo_error "Pandoc not found.\nDownload program from pandoc.org"
     exit 1
 fi
 
@@ -293,7 +293,7 @@ while true; do
                                 mkdir -p "${arg_output_dir}"
                             fi
                             if [ ! -d "${arg_output_dir}" ]; then
-                                echo "Error: Output directory could not be created: ${arg_output_dir}"
+                                echo_error "Output directory could not be created: ${arg_output_dir}"
                                 exit 1
                             fi
                             # Create absolute path for the output directory
@@ -338,7 +338,7 @@ fi
 if [ -f "${v_input_dir}/${v_markdown_file}" ]; then
     arg_markdown_file="${v_input_dir}/${v_markdown_file}"
 else
-    echo "Error: Markdown file does not exist: ${v_input_dir}/${v_markdown_file}"
+    echo_error "Markdown file does not exist: ${v_input_dir}/${v_markdown_file}"
     echo "Current directory: $(pwd)"
     exit 1
 fi
@@ -382,14 +382,14 @@ fi
 declare v_output_latex_file="${arg_output_file}.${DEFAULT_LATEX_EXT}"
 # v_output_latex_file="${arg_output_dir}/${v_output_latex_file}"
 if [ -f "${arg_output_dir}/${v_output_latex_file}" ]; then
-    echo "Notice: LaTeX output file exists: ${v_output_latex_file}"
-    echo "        Existing file will be overwritten."
+    echo_warn "Notice: LaTeX output file exists: ${v_output_latex_file}"
+    echo_warn "        Existing file will be overwritten."
 fi
 declare v_output_file="${arg_output_file}.${DEFAULT_OUTPUT_EXT}"
 arg_output_file="${arg_output_dir}/${v_output_file}"
 if [ -f "${arg_output_file}" ]; then
-    echo "Notice: PDF output file exists: ${arg_output_file}"
-    echo "        Existing file will be overwritten."
+    echo_warn "Notice: PDF output file exists: ${arg_output_file}"
+    echo_warn "        Existing file will be overwritten."
 fi
 
 
@@ -592,7 +592,7 @@ else
         # Remove directory and file extension
         v_base_filename=$(basename ${file})
         v_base_filename="${v_base_filename%.*}"
-        echo "Base Filename: ${v_base_filename}"
+        echo_debug "Base Filename: ${v_base_filename}"
 
         # convert                     \
         #     "${basefilename}.png"   \
@@ -805,7 +805,7 @@ if [ ${flag_latex_output} -eq 1 ]; then
             if [[ ! "$(pwd)" == "${arg_output_dir}" ]]; then
                 pdflatex "${v_output_latex_file}"
                 if [ -f "${v_output_file}" ]; then
-                    echo "Output: ${v_output_file}"
+                    echo_debug "Output: ${v_output_file}"
                     if [[ ! "$(pwd)" == "${arg_output_dir}" ]]; then
                         mv "${v_output_file}" "${arg_output_file}"
                     fi
