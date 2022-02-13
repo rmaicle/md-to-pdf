@@ -15,7 +15,7 @@ declare SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pw
 declare CURRENT_DIR=$(pwd)
 
 declare PROGRAM="pandoc"
-declare HEADER="Markdown to PDF Using Pandoc.
+declare HEADER="Script for converting markdown files to PDF.
 Copyright (C) 2019-2022 Ricardo Maicle"
 
 
