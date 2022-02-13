@@ -110,12 +110,12 @@ function show_usage() {
 cat << EOF
 ${HEADER}
 
-Converts the contents of markdown input file (${DEFAULT_MARKDOWN_CONTENT_FILE}) and TeX image file
-(${DEFAULT_IMAGE_CONTENT_FILE}) using a specified TeX/LaTex template file to
-Portable Document Format file.
+Converts the contents of markdown input file (${DEFAULT_MARKDOWN_CONTENT_FILE}) and TeX
+image file (${DEFAULT_IMAGE_CONTENT_FILE}) using TeX/LaTex template file to PDF format.
 
 Usage:
-  ${SCRIPTNAME} [option...] template output
+  ${SCRIPTNAME} [option...]
+
 Options:
   --above-title-rule  offset the title rule display; this is the height
                       above the baseline to raise the rule box; default
