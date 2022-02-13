@@ -16,7 +16,7 @@ declare CURRENT_DIR=$(pwd)
 
 declare PROGRAM="pandoc"
 declare HEADER="Markdown to PDF Using Pandoc.
-Created by Ricardo Maicle 2019"
+Copyright (C) 2019-2022 Ricardo Maicle"
 
 
 
