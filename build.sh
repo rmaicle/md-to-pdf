@@ -14,6 +14,11 @@ declare SCRIPTNAME=${0##*/}
 declare SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 declare CURRENT_DIR=$(pwd)
 
+source /usr/local/bin/dirstack.sh
+source /usr/local/bin/echo.sh
+
+
+
 declare PROGRAM="pandoc"
 declare HEADER="Script for converting markdown files to PDF.
 Copyright (C) 2019-2022 Ricardo Maicle"
@@ -32,8 +37,6 @@ if command -v vmtouch &> /dev/null ; then
     vmtouch -q -t "${v_pandoc_path}"
     vmtouch -q -t "/usr/bin/pdflatex"
 fi
-
-
 
 
 
@@ -89,8 +92,7 @@ declare flag_debug_mode=0
 
 
 
-source /usr/local/bin/dirstack.sh
-source /usr/local/bin/echo.sh
+
 
 
 
