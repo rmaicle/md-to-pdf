@@ -282,10 +282,10 @@ while true; do
         --no-backmatter)    flag_no_backmatter=1 ; shift ;;
         --no-copyright)     flag_no_copyright=1 ; shift ;;
         --no-frontmatter)   flag_no_frontmatter=1 ; shift ;;
-        --no-lof)           flag_no_lof=0 ; shift ;;
-        --no-lot)           flag_no_lot=0 ; shift ;;
+        --no-lof)           flag_no_lof=1 ; shift ;;
+        --no-lot)           flag_no_lot=1 ; shift ;;
         --no-images)        flag_no_images=1 ; shift ;;
-        --no-toc)           flag_no_toc=0 ; shift ;;
+        --no-toc)           flag_no_toc=1 ; shift ;;
         --od)               arg_output_dir="${2}"
                             shift 2
                             # Create output directory if it does not exist
@@ -312,6 +312,7 @@ while true; do
                             ;;
         --show-frame)       flag_show_frame=1 ; shift ;;
         --template)         arg_template_file="${2}" ; shift 2 ;;
+        --toc-depth)        arg_toc_depth="${2}" ; shift 2 ;;
         *)                  break ;;
     esac
 done
@@ -425,40 +426,22 @@ EOF
 
 
 
-output_papersize="--metadata=papersize:${PANDOC_PAPER_SIZES[${arg_paper_size}]}"
-output_font_size="--metadata=fontsize:${arg_font_size}"
-if [ ${flag_draft} -eq 1 ]; then
-    output_draft="--metadata=is_draft:true"
-else
-    output_draft="--metadata=is_draft:false"
-fi
-if [ ${flag_show_frame} -eq 1 ]; then
-    output_show_frame="--metadata=showframe:true"
-else
-    output_show_frame="--metadata=showframe:false"
-fi
-if [ ${flag_no_toc} -eq 1 ]; then
-    output_toc_page=""
-else
-    output_toc_page="--table-of-contents"
-fi
-output_toc_depth="--toc-depth=${arg_toc_depth}"
-if [ ${flag_no_copyright} -eq 1 ]; then
-    output_copyright_page="--metadata=with_copyright:false"
-else
-    output_copyright_page="--metadata=with_copyright:true"
-fi
+declare output_copyright_page=""
+declare output_draft=""
+declare output_lof_page=""
+declare output_lot_page=""
+declare output_show_frame=""
+declare output_toc_page=""
+declare output_font_size="--metadata=fontsize:${arg_font_size}"
+declare output_papersize="--metadata=papersize:${PANDOC_PAPER_SIZES[${arg_paper_size}]}"
+declare output_toc_depth="--toc-depth=${arg_toc_depth}"
 
-if [ ${flag_no_lof} -eq 1 ]; then
-    output_lof_page="--metadata=lof:false"
-else
-    output_lof_page="--metadata=lof:true"
-fi
-if [ ${flag_no_lot} -eq 1 ]; then
-    output_lot_page="--metadata=lot:false"
-else
-    output_lot_page="--metadata=lot:true"
-fi
+[ ${flag_draft} -eq 0 ] && output_draft="--metadata=is_draft:false"
+[ ${flag_no_copyright} -eq 0 ] && output_copyright_page="--metadata=with_copyright:true"
+[ ${flag_no_lof} -eq 0 ] && output_lof_page="--metadata=lof:true"
+[ ${flag_no_lot} -eq 0 ] && output_lot_page="--metadata=lot:true"
+[ ${flag_no_toc} -eq 0 ] && output_toc_page="--table-of-contents"
+[ ${flag_show_frame} -eq 0 ] && output_show_frame="--metadata=showframe:false"
 
 
 
@@ -659,8 +642,6 @@ else
             -f markdown+raw_attribute                   \
             -f markdown+raw_tex                         \
             -f markdown+space_in_atx_header             \
-            ${output_toc_page}                          \
-            ${output_toc_depth}                         \
             --to=latex                                  \
             --pdf-engine=${arg_pdf_engine}              \
             --markdown-headings=atx                     \
@@ -708,8 +689,6 @@ else
             -f markdown+raw_attribute                   \
             -f markdown+raw_tex                         \
             -f markdown+space_in_atx_header             \
-            ${output_toc_page}                          \
-            ${output_toc_depth}                         \
             --to=latex                                  \
             --pdf-engine=${arg_pdf_engine}              \
             --markdown-headings=atx                     \
@@ -767,9 +746,11 @@ if [ ${flag_latex_output} -eq 1 ]; then
         ${output_papersize}                             \
         ${output_font_size}                             \
         ${output_copyright_page}                        \
+        ${output_show_frame}                            \
+        ${output_toc_page}                              \
+        ${output_toc_depth}                             \
         ${output_lot_page}                              \
         ${output_lof_page}                              \
-        ${output_show_frame}                            \
         -f markdown+blank_before_blockquote             \
         -f markdown+blank_before_header                 \
         -f markdown+escaped_line_breaks                 \
@@ -788,8 +769,6 @@ if [ ${flag_latex_output} -eq 1 ]; then
         -f markdown+raw_tex                             \
         -f markdown+space_in_atx_header                 \
         -f markdown+table_captions                      \
-        ${output_toc_page}                              \
-        ${output_toc_depth}                             \
         --standalone                                    \
         --to=latex                                      \
         --pdf-engine=${arg_pdf_engine}                  \
@@ -837,9 +816,11 @@ if [ ${flag_latex_output} -eq 0 ]; then
         ${output_papersize}                             \
         ${output_font_size}                             \
         ${output_copyright_page}                        \
+        ${output_show_frame}                            \
+        ${output_toc_page}                              \
+        ${output_toc_depth}                             \
         ${output_lot_page}                              \
         ${output_lof_page}                              \
-        ${output_show_frame}                            \
         -f markdown+blank_before_blockquote             \
         -f markdown+blank_before_header                 \
         -f markdown+escaped_line_breaks                 \
@@ -858,8 +839,6 @@ if [ ${flag_latex_output} -eq 0 ]; then
         -f markdown+raw_tex                             \
         -f markdown+space_in_atx_header                 \
         -f markdown+table_captions                      \
-        ${output_toc_page}                              \
-        ${output_toc_depth}                             \
         --standalone                                    \
         --to=latex                                      \
         --output=${v_output_file}                       \
