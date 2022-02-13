@@ -92,10 +92,6 @@ declare flag_debug_mode=0
 
 
 
-
-
-
-
 #
 # Convert specified string argument to lowercase
 #
