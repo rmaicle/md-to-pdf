@@ -88,8 +88,6 @@ declare DEFAULT_TOC_DEPTH="2"
 declare DEFAULT_SKIP_FILE_MARKER="x "
 declare DEFAULT_PREPROCESSOR_FILE_MARKER="pp-"
 
-declare flag_debug_mode=0
-
 
 
 #
