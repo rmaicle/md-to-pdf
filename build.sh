@@ -101,6 +101,7 @@ function to_lowercase() {
 # Help text
 #
 function show_usage() {
+    local v_template_files=(${DEFAULT_TEMPLATE_DIR}/*.tex)
 cat << EOF
 ${HEADER}
 
@@ -142,11 +143,15 @@ $(printf '                        %s point\n' ${FONT_SIZES[@]})
 $(printf '                        %s\n' ${PAPER_SIZES[@]})
   --softcopy          generate E-book format PDF document
   --show-frame        show page margins
-  --template file     TeX/LaTeX template file/file path; template files
-                      is initially searched in the input directory, then
-                      in the default template directory (${DEFAULT_TEMPLATE_DIR});
-                      if argument is a relative file path, the search is
-                      relative to the input directory
+  --template file     TeX/LaTeX template file/file path; template files is
+                      initially searched in the input directory, then in the
+                      default template directory (${DEFAULT_TEMPLATE_DIR}); if the
+                      argument is a relative file path, the search is relative
+                      to the input directory.
+
+                      Template files in the default template directory,
+                      ${DEFAULT_TEMPLATE_DIR}:
+$(printf '                        %s\n' ${v_template_files[@]})
   --toc-depth level   set the number of levels deep to include in the
                       table of contents; default is ${DEFAULT_TOC_DEPTH};
                         0 - chapter
