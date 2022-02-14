@@ -361,6 +361,12 @@ fi
 
 
 # Template file argument may be a filename or a filename with a directory
+#
+# - if template file argument is a filename only, then search for it in
+#   the input directory. If it is not found in the input directory,
+#   search for it in the default template directory.
+# - if template file argument contains a directory, the file is searched
+#   relative to the input directory.
 if [[ $(dirname "${arg_template_file}") == "." ]]; then
     if [ -f "${v_input_dir}/${arg_template_file}" ]; then
         arg_template_file="${v_input_dir}/${arg_template_file}"
@@ -374,11 +380,11 @@ if [[ $(dirname "${arg_template_file}") == "." ]]; then
     fi
 else
     if [ ! ${arg_template_file} != ${arg_template_file#/} ]; then
-        if [ ! -f "${CURRENT_DIR}/${arg_template_file}" ]; then
-            echo_error "Template file not found: ${CURRENT_DIR}/${arg_template_file}\nAborting."
+        if [ ! -f "${v_input_dir}/${arg_template_file}" ]; then
+            echo_error "Template file not found: ${v_input_dir}/${arg_template_file}\nAborting."
             exit 1
         fi
-        pushd "$(dirname ${CURRENT_DIR}/${arg_template_file})"
+        pushd "$(dirname ${v_input_dir}/${arg_template_file})"
         arg_template_file="$(pwd)/$(basename ${arg_template_file})"
         popd
     fi
