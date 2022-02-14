@@ -106,16 +106,16 @@ cat << EOF
 ${HEADER}
 
 Converts the contents of markdown input file (${DEFAULT_MARKDOWN_CONTENT_FILE}) and TeX
-image file (${DEFAULT_IMAGE_CONTENT_FILE}) using TeX/LaTex template file to PDF format.
+image input file (${DEFAULT_IMAGE_CONTENT_FILE}) using TeX/LaTex template file to PDF format.
 
 Usage:
   ${SCRIPTNAME} [option...]
 
 Options:
-  --above-title-rule  offset the title rule display; this is the height
-                      above the baseline to raise the rule box; default
-                      is 0pt; positive values raises the rule; negative
-                      values lowers the rule
+  --above-title-rule  offset the title rule display; this is the height above
+                      the baseline to raise the rule box; default is 0pt;
+                      positive values raises the rule; negative values lowers
+                      the rule
   --after-title-rule  vertical space after title rule; default is 5pt;
   --debug             run script in debug mode
   --draft             generate draft version PDF document
@@ -125,11 +125,11 @@ $(printf '                        %s point\n' ${PDF_ENGINES[@]})
 $(printf '                        %s point\n' ${FONT_SIZES[@]})
   --gen-latest        use latest installed Pandoc version
   --help              print help and exit
-  --image file        input file containing a list of TeX image files to
-                      process; default filename is ${DEFAULT_IMAGE_CONTENT_FILE}
+  --image file        input file containing a list of TeX image files; default
+                      image input filename is ${DEFAULT_IMAGE_CONTENT_FILE}
   --latex             output LaTeX files
-  --markdown file     input file containing a list of markdown files to
-                      process; default filename is ${DEFAULT_MARKDOWN_CONTENT_FILE}
+  --markdown file     input file containing a list of markdown files; default
+                      markdown input filename is ${DEFAULT_MARKDOWN_CONTENT_FILE}
   --no-backmatter     do not generate user-supplied backmatter pages
   --no-copyright      do not generate copyright page
   --no-frontmatter    do not generate user-supplied frontmatter pages
@@ -138,7 +138,8 @@ $(printf '                        %s point\n' ${FONT_SIZES[@]})
   --no-lot            do not generate list of tables
   --no-toc            do not generate table of contents
   --od dir            output directory; default is current directory
-  --of file           output filename appended with .pdf; default is 'output'
+  --of file           output filename appended with '.pdf'; the default output
+                      filename is 'output'
   --paper             paper size; default is letter
 $(printf '                        %s\n' ${PAPER_SIZES[@]})
   --softcopy          generate E-book format PDF document
@@ -152,8 +153,8 @@ $(printf '                        %s\n' ${PAPER_SIZES[@]})
                       Template files in the default template directory,
                       ${DEFAULT_TEMPLATE_DIR}:
 $(printf '                        %s\n' ${v_template_files[@]})
-  --toc-depth level   set the number of levels deep to include in the
-                      table of contents; default is ${DEFAULT_TOC_DEPTH};
+  --toc-depth level   set the number of levels deep to include in the table of
+                      contents; default is ${DEFAULT_TOC_DEPTH};
                         0 - chapter
                         1 - section
                         2 - subsection
