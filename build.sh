@@ -395,14 +395,14 @@ fi
 declare v_output_latex_file="${arg_output_file}.${DEFAULT_LATEX_EXT}"
 # v_output_latex_file="${arg_output_dir}/${v_output_latex_file}"
 if [ -f "${arg_output_dir}/${v_output_latex_file}" ]; then
-    echo_warn "Notice: LaTeX output file exists: ${v_output_latex_file}"
-    echo_warn "        Existing file will be overwritten."
+    echo_yellow "Notice: LaTeX output file exists: ${v_output_latex_file}"
+    echo_yellow "        Existing file will be overwritten."
 fi
 declare v_output_file="${arg_output_file}.${DEFAULT_OUTPUT_EXT}"
 arg_output_file="${arg_output_dir}/${v_output_file}"
 if [ -f "${arg_output_file}" ]; then
-    echo_warn "Notice: PDF output file exists: ${arg_output_file}"
-    echo_warn "        Existing file will be overwritten."
+    echo_yellow "Notice: PDF output file exists: ${arg_output_file}"
+    echo_yellow "        Existing file will be overwritten."
 fi
 
 
