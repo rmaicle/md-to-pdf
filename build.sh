@@ -127,7 +127,8 @@ $(printf '                        %s point\n' ${FONT_SIZES[@]})
   --help              print help and exit
   --image file        input file containing a list of TeX image files; default
                       image input filename is ${DEFAULT_IMAGE_CONTENT_FILE}
-  --latex             output LaTeX files
+  --latex             output TeX/LaTeX file and generate PDF output
+  --latex-only        output TeX/LaTeX file and exit
   --markdown file     input file containing a list of markdown files; default
                       markdown input filename is ${DEFAULT_MARKDOWN_CONTENT_FILE}
   --no-backmatter     do not generate user-supplied backmatter pages
@@ -204,6 +205,7 @@ arg_output_file="${DEFAULT_OUTPUT_FILE}"
 flag_draft=0
 flag_show_frame=0
 flag_latex_output=0
+flag_latex_only_output=0
 flag_no_images=0
 flag_no_backmatter=0
 flag_no_frontmatter=0
@@ -226,6 +228,7 @@ OPTIONS_LONG+=",fontsize:"
 OPTIONS_LONG+=",help"
 OPTIONS_LONG+=",image:"
 OPTIONS_LONG+=",latex"
+OPTIONS_LONG+=",latex-only"
 OPTIONS_LONG+=",markdown:"
 OPTIONS_LONG+=",no-backmatter"
 OPTIONS_LONG+=",no-copyright"
@@ -278,6 +281,7 @@ while true; do
                             fi
                             ;;
         --latex)            flag_latex_output=1 ; shift ;;
+        --latex-only)       flag_latex_only_output=1 ; shift ;;
         --markdown)         arg_markdown_file="${2}"
                             shift 2
                             if [ ! -f "${arg_markdown_file}" ]; then
@@ -407,6 +411,10 @@ fi
 
 
 
+[ ${flag_latex_only_output} -eq 1 ] && flag_latex_output=1
+
+
+
 cat << EOF
 Current directory: ${CURRENT_DIR}
 Input directory: ${v_input_dir}
@@ -426,6 +434,7 @@ ToC Depth: ${arg_toc_depth}
 Draft: ${flag_draft}
 Show frame: ${flag_show_frame}
 LaTeX output: ${flag_latex_output}
+LaTeX only output: ${flag_latex_only_output}
 No Table of Contents: ${flag_no_toc}
 No List of Figures: ${flag_no_lof}
 No List of Tables: ${flag_no_lot}
@@ -813,7 +822,7 @@ fi
 
 
 
-if [ ${flag_latex_output} -eq 0 ]; then
+if [ ${flag_latex_only_output} -eq 0 ]; then
     echo "Converting markdown files to ${v_output_file}..."
     # Pandoc 2.11.2 deprecates --atx-headers,
     # use --markdown-headings=atx instead.
