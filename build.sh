@@ -355,7 +355,7 @@ declare v_image_file="$(basename ${arg_image_file})"
 if [ -f "${v_input_dir}/${v_image_file}" ]; then
     arg_image_file="${v_input_dir}/${v_image_file}"
 else
-    flag_no_image=1
+    flag_no_images=1
 fi
 
 
@@ -458,7 +458,7 @@ declare output_toc_depth="--toc-depth=${arg_toc_depth}"
 
 
 # Process image content file
-if [ ${flag_no_image} -eq 1 ]; then
+if [ ${flag_no_images} -eq 1 ]; then
     echo "Skipping image content file preprocessing."
 else
     v_skip_count=0
