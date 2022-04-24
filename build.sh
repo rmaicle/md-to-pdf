@@ -151,9 +151,9 @@ $(printf '                        %s point\n' ${FONT_SIZES[@]})
 $(printf '                        %s\n' ${PAPER_SIZES[@]})
   --softcopy          generate E-book format PDF document
   --show-frame        show page margins
-  --template file     TeX/LaTeX template file/file path; template files is
-                      initially searched in the input directory, then in the
-                      default template directory (${DEFAULT_TEMPLATE_DIR}); if the
+  --template file     TeX/LaTeX template file/file path; template file is first
+                      searched in the input directory, then in the default
+                      template directory (${DEFAULT_TEMPLATE_DIR}); if the
                       argument is a relative file path, the search is relative
                       to the input directory.
 
