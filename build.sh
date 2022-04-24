@@ -27,10 +27,12 @@ Copyright (C) 2019-2022 Ricardo Maicle"
 
 
 
-if ! command -v pandoc &> /dev/null ; then
+if ! command -v ${PROGRAM} &> /dev/null ; then
     echo_error "Pandoc not found.\nDownload program from pandoc.org"
     exit 1
 fi
+
+
 
 declare flag_vmtouch_found=0
 if command -v vmtouch &> /dev/null ; then
