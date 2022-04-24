@@ -147,7 +147,7 @@ $(printf '                        %s point\n' ${FONT_SIZES[@]})
   --od dir            output directory; default is current directory
   --of file           output filename appended with '.pdf'; the default output
                       filename is 'output'
-  --paper             paper size; default is letter
+  --paper             paper size; default is ${DEFAULT_PAPER_SIZE}
 $(printf '                        %s\n' ${PAPER_SIZES[@]})
   --softcopy          generate E-book format PDF document
   --show-frame        show page margins
