@@ -126,7 +126,7 @@ Options:
   --debug             run script in debug mode
   --draft             generate draft version PDF document
   --engine            PDF engine to use; default is ${DEFAULT_PDF_ENGINE}
-$(printf '                        %s point\n' ${PDF_ENGINES[@]})
+$(printf '                        %s\n' ${PDF_ENGINES[@]})
   --fontsize n        body text font point size; default is ${DEFAULT_FONT_SIZE} pt.
 $(printf '                        %s point\n' ${FONT_SIZES[@]})
   --gen-latest        use latest installed Pandoc version
