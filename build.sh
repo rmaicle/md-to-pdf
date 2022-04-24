@@ -272,7 +272,7 @@ while true; do
                             ;;
         --font-size)        arg_font_size="${2}"
                             if [[ ! "${FONT_SIZES[@]}" =~ "${arg_font_size}" ]]; then
-                                echo_error "Unrecognized paper size: ${arg_font_size}\nAborting."
+                                echo_error "Unrecognized font size: ${arg_font_size}\nAborting."
                                 echo "Use one of: ${FONT_SIZES[@]}"
                                 exit 1
                             fi
