@@ -231,6 +231,7 @@ OPTIONS_LONG+=",debug"
 OPTIONS_LONG+=",draft"
 OPTIONS_LONG+=",engine:"
 OPTIONS_LONG+=",fontsize:"
+OPTIONS_LONG+=",gen-latest"
 OPTIONS_LONG+=",help"
 OPTIONS_LONG+=",image:"
 OPTIONS_LONG+=",latex"
@@ -277,6 +278,13 @@ while true; do
                                 exit 1
                             fi
                             shift 2
+                            ;;
+        --gen-latest)       shift
+                            if ! command -v ${PROGRAM_ALT} &> /dev/null ; then
+                                echo_warn "Latest Pandoc version not found.\nUsing $(${PROGRAM} --version | head -n 1)"
+                            else
+                                PROGRAM="${PROGRAM_ALT}"
+                            fi
                             ;;
         --help)             show_usage ; exit ;;
         --image)            arg_image_file="${2}"
