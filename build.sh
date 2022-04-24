@@ -486,7 +486,8 @@ else
         # Skip empty lines
         [[ -z "${file}" ]] && continue
         # Skip entries prefixed with the skip marker
-        if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
+        # if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
+        if [[ "${file}" == "${DEFAULT_SKIP_FILE_MARKER_ONLY}" || "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
             echo_yellow "  Skipping: ${file:2}"
             v_skip_count=$((${v_skip_count} + 1))
             continue
@@ -519,7 +520,8 @@ for file in "${v_temp_source_files[@]}"; do
     # Skip empty lines
     [[ -z "${file}" ]] && continue
     # Skip entries prefixed with the skip marker
-    if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
+    # if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
+    if [[ "${file}" == "${DEFAULT_SKIP_FILE_MARKER_ONLY}" || "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
         echo_yellow "  Skipping:  ${file:2}"
         v_skip_count=$((${v_skip_count} + 1))
         continue
