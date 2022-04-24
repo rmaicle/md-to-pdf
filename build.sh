@@ -9,18 +9,20 @@ set -o errexit -o pipefail -o noclobber -o nounset
 
 
 
-declare HOME_DIR="$(eval echo ~${USER})"
-declare SCRIPTNAME=${0##*/}
-declare SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-declare CURRENT_DIR=$(pwd)
+declare -r HOME_DIR="$(eval echo ~${USER})"
+declare -r SCRIPTNAME=${0##*/}
+declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+declare -r CURRENT_DIR=$(pwd)
 
 source /usr/local/bin/dirstack.sh
 source /usr/local/bin/echo.sh
 
 
 
-declare PROGRAM="pandoc"
-declare HEADER="Script for converting markdown files to PDF.
+declare -r PROGRAM_DEFAULT="pandoc"
+declare -r PROGRAM_ALT="pandoc-latest"
+declare PROGRAM="${PROGRAM_DEFAULT}"
+declare -r HEADER="Script for converting markdown files to PDF.
 Copyright (C) 2019-2022 Ricardo Maicle"
 
 
@@ -40,53 +42,55 @@ fi
 
 
 
-declare DEFAULT_MARKDOWN_CONTENT_FILE="markdownlist.txt"
-declare DEFAULT_IMAGE_CONTENT_FILE="imagelist.txt"
+declare -r DEFAULT_MARKDOWN_CONTENT_FILE="markdownlist.txt"
+declare -r DEFAULT_IMAGE_CONTENT_FILE="imagelist.txt"
 
 # Engine: [pdflatex | xelatex | lualatex]
-declare DEFAULT_PDF_ENGINE="pdflatex"
-declare ALTERNATIVE_PDF_ENGINE="xelatex"
+declare -r DEFAULT_PDF_ENGINE="pdflatex"
+declare -r ALTERNATIVE_PDF_ENGINE="xelatex"
 
-declare -a PDF_ENGINES=(
+declare -a -r PDF_ENGINES=(
     "${DEFAULT_PDF_ENGINE}"
     "${ALTERNATIVE_PDF_ENGINE}"
 )
 
 # Paper arguments to script
-declare PAPER_A4="a4"
-declare PAPER_USLETTER="usletter"
+declare -r PAPER_A4="a4"
+declare -r PAPER_USLETTER="usletter"
 
-declare DEFAULT_PAPER_SIZE="${PAPER_A4}"
+declare -r DEFAULT_PAPER_SIZE="${PAPER_A4}"
 
-declare -a PAPER_SIZES=(
+declare -a -r PAPER_SIZES=(
     ${PAPER_A4}
     ${PAPER_USLETTER}
 )
 
 # Values passed to pandoc
-declare -A PANDOC_PAPER_SIZES=(
+declare -A -r PANDOC_PAPER_SIZES=(
     [${PAPER_A4}]="a4paper"
     [${PAPER_USLETTER}]="letterpaper"
 )
 
-declare DEFAULT_FONT_SIZE="10"
-declare -a FONT_SIZES=(
+declare -r DEFAULT_FONT_SIZE="10"
+declare -a -r FONT_SIZES=(
     "9"
     "${DEFAULT_FONT_SIZE}"
     "11"
     "12"
 )
 
-declare DEFAULT_TEMPLATE_DIR="/usr/local/share"
-declare DEFAULT_INPUT_DIR="${CURRENT_DIR}"
-declare DEFAULT_OUTPUT_DIR="${CURRENT_DIR}"
-declare DEFAULT_OUTPUT_FILE="output"
-declare DEFAULT_OUTPUT_EXT="pdf"
-declare DEFAULT_LATEX_EXT="tex"
-declare DEFAULT_TOC_DEPTH="2"
+declare -r DEFAULT_TEMPLATE_DIR="/usr/local/share"
+declare -r DEFAULT_TEMPLATE_FILE="template_doc.tex"
+declare -r DEFAULT_INPUT_DIR="${CURRENT_DIR}"
+declare -r DEFAULT_OUTPUT_DIR="${CURRENT_DIR}"
+declare -r DEFAULT_OUTPUT_FILE="output"
+declare -r DEFAULT_OUTPUT_EXT="pdf"
+declare -r DEFAULT_LATEX_EXT="tex"
+declare -r DEFAULT_TOC_DEPTH="2"
 
-declare DEFAULT_SKIP_FILE_MARKER="x "
-declare DEFAULT_PREPROCESSOR_FILE_MARKER="pp-"
+declare -r DEFAULT_SKIP_FILE_MARKER_ONLY="x"
+declare -r DEFAULT_SKIP_FILE_MARKER="x "
+declare -r DEFAULT_PREPROCESSOR_FILE_MARKER="pp-"
 
 
 
@@ -190,35 +194,35 @@ EOF
 
 
 
-arg_paper_size="${DEFAULT_PAPER_SIZE}"
-arg_font_size="${DEFAULT_FONT_SIZE}"
-arg_markdown_file="${DEFAULT_MARKDOWN_CONTENT_FILE}"
-arg_image_file="${DEFAULT_IMAGE_CONTENT_FILE}"
-arg_template_file=""
-arg_pdf_engine="${DEFAULT_PDF_ENGINE}"
-arg_toc_depth="${DEFAULT_TOC_DEPTH}"
-arg_output_dir="${DEFAULT_OUTPUT_DIR}"
-arg_output_file="${DEFAULT_OUTPUT_FILE}"
+declare arg_paper_size="${DEFAULT_PAPER_SIZE}"
+declare arg_font_size="${DEFAULT_FONT_SIZE}"
+declare arg_markdown_file="${DEFAULT_MARKDOWN_CONTENT_FILE}"
+declare arg_image_file="${DEFAULT_IMAGE_CONTENT_FILE}"
+declare arg_template_file="${DEFAULT_TEMPLATE_FILE}"
+declare arg_pdf_engine="${DEFAULT_PDF_ENGINE}"
+declare arg_toc_depth="${DEFAULT_TOC_DEPTH}"
+declare arg_output_dir="${DEFAULT_OUTPUT_DIR}"
+declare arg_output_file="${DEFAULT_OUTPUT_FILE}"
 
 
 
-flag_draft=0
-flag_show_frame=0
-flag_latex_output=0
-flag_latex_only_output=0
-flag_no_images=0
-flag_no_backmatter=0
-flag_no_frontmatter=0
-flag_no_copyright=0
-flag_no_toc=0
-flag_no_lof=0
-flag_no_lot=0
+declare flag_draft=0
+declare flag_show_frame=0
+declare flag_latex_output=0
+declare flag_latex_only_output=0
+declare flag_no_images=0
+declare flag_no_backmatter=0
+declare flag_no_frontmatter=0
+declare flag_no_copyright=0
+declare flag_no_toc=0
+declare flag_no_lof=0
+declare flag_no_lot=0
 
 
 
 # read the options
-OPTIONS_SHORT="v"
-OPTIONS_LONG=""
+declare OPTIONS_SHORT="v"
+declare OPTIONS_LONG=""
 # OPTIONS_LONG+=",above-title-rule:"
 # OPTIONS_LONG+=",after-title-rule:"
 OPTIONS_LONG+=",debug"
