@@ -282,7 +282,7 @@ while true; do
         --image)            arg_image_file="${2}"
                             shift 2
                             if [ ! -f "${arg_image_file}" ]; then
-                                echo_error "Image list file not found: ${arg_image_file}\nAborting."
+                                echo_error "Image input file not found: ${arg_image_file}\nAborting."
                                 exit 1
                             fi
                             ;;
@@ -291,7 +291,7 @@ while true; do
         --markdown)         arg_markdown_file="${2}"
                             shift 2
                             if [ ! -f "${arg_markdown_file}" ]; then
-                                echo_error "Markdown list file not found: ${arg_markdown_file}\nAborting."
+                                echo_error "Markdown input file not found: ${arg_markdown_file}\nAborting."
                                 exit 1
                             fi
                             ;;
@@ -384,7 +384,7 @@ if [[ $(dirname "${arg_template_file}") == "." ]]; then
         if [ -f "${DEFAULT_TEMPLATE_DIR}/${arg_template_file}" ]; then
             arg_template_file="${DEFAULT_TEMPLATE_DIR}/${arg_template_file}"
         else
-            echo_error "Template file: ${2}\n  Not found: ${DEFAULT_TEMPLATE_DIR}\n  Not found: ${v_input_dir}\nAborting."
+            echo_error "Template file: ${arg_template_file}\n  Not found: ${DEFAULT_TEMPLATE_DIR}\n  Not found: ${v_input_dir}\nAborting."
             exit 1
         fi
     fi
