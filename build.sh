@@ -16,6 +16,7 @@ declare -r CURRENT_DIR=$(pwd)
 
 source /usr/local/bin/dirstack.sh
 source /usr/local/bin/echo.sh
+source /usr/local/bin/debug.sh
 
 
 
