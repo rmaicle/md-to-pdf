@@ -262,7 +262,7 @@ while true; do
     case "${1}" in
         --debug)            flag_debug_mode=1 ; shift 2 ;;
         --draft)            flag_draft=1 ; shift ;;
-        --engine)           arg_pdf_engine="${2}"
+        --engine)           arg_pdf_engine="${2,,}"
                             if [[ ! "${PDF_ENGINES[@]}" =~ "${arg_pdf_engine}" ]]; then
                                 echo_error "Unrecognized PDF engine: ${arg_pdf_engine}\nAborting."
                                 echo "Use one of: ${PDF_ENGINES[@]}"
