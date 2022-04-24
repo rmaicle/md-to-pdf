@@ -695,8 +695,11 @@ else
         fi
         v_pp_bm_files+=("${v_base_filename_tex}")
         v_include_back_matter+="--include-after-body=${v_base_filename_tex} "
+
+        # Until panda resolves the issue with tables, it will not be used.
+        #   -L ${HOME_DIR}/.local/bin/panda.lua
+
         ${PROGRAM}                                      \
-            -L ${HOME_DIR}/.local/bin/panda.lua         \
             ${file}                                     \
             ${output_draft}                             \
             ${output_papersize}                         \
@@ -832,8 +835,11 @@ if [ ${flag_latex_only_output} -eq 0 ]; then
     echo "Converting markdown files to ${v_output_file}..."
     # Pandoc 2.11.2 deprecates --atx-headers,
     # use --markdown-headings=atx instead.
+
+    # Until panda resolves the issue with tables, it will not be used.
+    #   -L ${HOME_DIR}/.local/bin/panda.lua
+
     ${PROGRAM}                                          \
-        -L ${HOME_DIR}/.local/bin/panda.lua             \
         ${v_source_files[@]}                            \
         ${v_include_front_matter}                       \
         ${v_include_back_matter}                        \
