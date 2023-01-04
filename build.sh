@@ -128,7 +128,7 @@ Options:
   --draft             generate draft version PDF document
   --engine            PDF engine to use; default is ${DEFAULT_PDF_ENGINE}
 $(printf '                        %s\n' ${PDF_ENGINES[@]})
-  --fontsize n        body text font point size; default is ${DEFAULT_FONT_SIZE} pt.
+  --font-size n       body text font point size; default is ${DEFAULT_FONT_SIZE} pt.
 $(printf '                        %s point\n' ${FONT_SIZES[@]})
   --gen-latest        use latest installed Pandoc version
   --help              print help and exit
@@ -231,7 +231,7 @@ declare OPTIONS_LONG=""
 OPTIONS_LONG+=",debug"
 OPTIONS_LONG+=",draft"
 OPTIONS_LONG+=",engine:"
-OPTIONS_LONG+=",fontsize:"
+OPTIONS_LONG+=",font-size:"
 OPTIONS_LONG+=",gen-latest"
 OPTIONS_LONG+=",help"
 OPTIONS_LONG+=",image:"
