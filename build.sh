@@ -674,6 +674,7 @@ else
             -f markdown+footnotes                       \
             -f markdown+header_attributes               \
             -f markdown+implicit_figures                \
+            -f markdown+implicit_header_references      \
             -f markdown+inline_code_attributes          \
             -f markdown+line_blocks                     \
             -f markdown+link_attributes                 \
