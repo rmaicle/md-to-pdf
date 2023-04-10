@@ -91,7 +91,10 @@ declare -r DEFAULT_OUTPUT_EXT="pdf"
 declare -r DEFAULT_LATEX_EXT="tex"
 declare -r DEFAULT_TOC_DEPTH="2"
 
+# When the line only contains a skip file marker
 declare -r DEFAULT_SKIP_FILE_MARKER_ONLY="x"
+# When the line is prefixed with a skip file marker and a whitespace
+# before the filename
 declare -r DEFAULT_SKIP_FILE_MARKER="x "
 declare -r DEFAULT_PREPROCESSOR_FILE_MARKER="pp-"
 
@@ -495,9 +498,11 @@ else
         # Skip empty lines
         [[ -z "${file}" ]] && continue
         # Skip entries prefixed with the skip marker
-        # if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
-        if [[ "${file}" == "${DEFAULT_SKIP_FILE_MARKER_ONLY}" || "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
-            echo_yellow "  Skipping: ${file:2}"
+        if [[ "${file}" == "${DEFAULT_SKIP_FILE_MARKER_ONLY}" ]]; then
+            continue
+        fi
+        if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
+            echo_yellow "---  Skipping: ${file#${DEFAULT_SKIP_FILE_MARKER}}"
             v_skip_count=$((${v_skip_count} + 1))
             continue
         fi
@@ -529,9 +534,11 @@ for file in "${v_temp_source_files[@]}"; do
     # Skip empty lines
     [[ -z "${file}" ]] && continue
     # Skip entries prefixed with the skip marker
-    # if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
-    if [[ "${file}" == "${DEFAULT_SKIP_FILE_MARKER_ONLY}" || "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
-        echo_yellow "  Skipping:  ${file:2}"
+    if [[ "${file}" == "${DEFAULT_SKIP_FILE_MARKER_ONLY}" ]]; then
+        continue
+    fi
+    if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
+        echo_yellow "---  Skipping: ${file#${DEFAULT_SKIP_FILE_MARKER}}"
         v_skip_count=$((${v_skip_count} + 1))
         continue
     fi
