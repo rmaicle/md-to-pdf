@@ -774,7 +774,7 @@ fi
 # the PDF generation would likely fail too.
 #
 # Set to 0 to abort PDF generation.
-v_proceed_pdf_gen=1
+declare v_proceed_pdf_gen=1
 
 if [ ${flag_latex_output} -eq 1 ]; then
     echo "Creating Tex/LaTeX file ${v_output_latex_file}..."
