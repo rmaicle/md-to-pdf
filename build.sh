@@ -502,7 +502,7 @@ else
             continue
         fi
         if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
-            echo_yellow "---  Skipping: ${file#${DEFAULT_SKIP_FILE_MARKER}}"
+            echo_yellow "  Skipping: ${file#${DEFAULT_SKIP_FILE_MARKER}}"
             v_skip_count=$((${v_skip_count} + 1))
             continue
         fi
@@ -538,7 +538,7 @@ for file in "${v_temp_source_files[@]}"; do
         continue
     fi
     if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
-        echo_yellow "---  Skipping: ${file#${DEFAULT_SKIP_FILE_MARKER}}"
+        echo_yellow "  Skipping: ${file#${DEFAULT_SKIP_FILE_MARKER}}"
         v_skip_count=$((${v_skip_count} + 1))
         continue
     fi
@@ -823,8 +823,7 @@ if [ ${flag_latex_output} -eq 1 ]; then
         --listings                                      \
         > "${v_output_latex_file}"
 
-    echo -e "\nEnd of Tex/LaTeX file.
-    "
+    echo -e "\nEnd of Tex/LaTeX file.\n"
     [[ $? -eq 0 ]] && v_proceed_pdf_gen=1
 
     if [ ${v_proceed_pdf_gen} -eq 1 ]; then
