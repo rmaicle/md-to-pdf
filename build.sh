@@ -23,6 +23,7 @@ source /usr/local/bin/debug.sh
 declare -r PROGRAM_DEFAULT="pandoc"
 declare -r PROGRAM_ALT="pandoc-latest"
 declare PROGRAM="${PROGRAM_DEFAULT}"
+declare -r PANDA_LUA="/usr/local/bin/panda.lua"
 declare -r HEADER="Script for converting markdown files to PDF.
 Copyright (C) 2019-2022 Ricardo Maicle"
 
@@ -667,7 +668,7 @@ else
         v_pp_fm_files+=("${v_base_filename_tex}")
         v_include_front_matter+="--include-before-body=${v_base_filename_tex} "
         ${PROGRAM}                                      \
-            -L ${HOME_DIR}/.local/bin/panda.lua         \
+            -L ${PANDA_LUA}                             \
             ${file}                                     \
             ${output_draft}                             \
             ${output_papersize}                         \
@@ -782,7 +783,7 @@ if [ ${flag_latex_output} -eq 1 ]; then
     # Pandoc 2.11.2 deprecates --atx-headers,
     # use --markdown-headings=atx instead.
     ${PROGRAM}                                          \
-        -L ${HOME_DIR}/.local/bin/panda.lua             \
+        -L ${PANDA_LUA}                                 \
         ${v_source_files[@]}                            \
         ${v_include_front_matter}                       \
         ${v_include_back_matter}                        \
