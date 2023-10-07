@@ -133,7 +133,6 @@ Options:
 $(printf '                        %s\n' ${PDF_ENGINES[@]})
   --font-size n       body text font point size; default is ${DEFAULT_FONT_SIZE} pt.
 $(printf '                        %s point\n' ${FONT_SIZES[@]})
-  --gen-latest        use latest installed Pandoc version
   --help              print help and exit
   --image file        input file containing a list of TeX image files; default
                       image input filename is ${DEFAULT_IMAGE_CONTENT_FILE}
@@ -172,8 +171,9 @@ $(printf '                        %s\n' ${v_template_files[@]})
                         3 - subsubsection
                         4 - paragraph
                         5 - subparagraph
-  --verbose           verbose messages
+  --use-latest        use latest installed Pandoc version
 EOF
+  # --verbose           verbose messages
 }
 
 
@@ -235,7 +235,6 @@ OPTIONS_LONG+=",debug"
 OPTIONS_LONG+=",draft"
 OPTIONS_LONG+=",engine:"
 OPTIONS_LONG+=",font-size:"
-OPTIONS_LONG+=",gen-latest"
 OPTIONS_LONG+=",help"
 OPTIONS_LONG+=",image:"
 OPTIONS_LONG+=",latex"
@@ -254,6 +253,7 @@ OPTIONS_LONG+=",paper:"
 OPTIONS_LONG+=",show-frame"
 OPTIONS_LONG+=",template:"
 OPTIONS_LONG+=",toc-depth:"
+OPTIONS_LONG+=",use-latest"
 OPTIONS_TEMP=$(getopt               \
     --options ${OPTIONS_SHORT}      \
     --longoptions ${OPTIONS_LONG}   \
@@ -282,13 +282,6 @@ while true; do
                                 exit 1
                             fi
                             shift 2
-                            ;;
-        --gen-latest)       shift
-                            if ! command -v ${PROGRAM_ALT} &> /dev/null ; then
-                                echo_warn "Latest Pandoc version not found.\nUsing $(${PROGRAM} --version | head -n 1)"
-                            else
-                                PROGRAM="${PROGRAM_ALT}"
-                            fi
                             ;;
         --help)             show_usage ; exit ;;
         --image)            arg_image_file="${2}"
@@ -341,6 +334,13 @@ while true; do
         --show-frame)       flag_show_frame=1 ; shift ;;
         --template)         arg_template_file="${2}" ; shift 2 ;;
         --toc-depth)        arg_toc_depth="${2}" ; shift 2 ;;
+        --use-latest)       shift
+                            if ! command -v ${PROGRAM_ALT} &> /dev/null ; then
+                                echo_warn "Latest Pandoc version not found.\nUsing $(${PROGRAM} --version | head -n 1)"
+                            else
+                                PROGRAM="${PROGRAM_ALT}"
+                            fi
+                            ;;
         *)                  break ;;
     esac
 done
