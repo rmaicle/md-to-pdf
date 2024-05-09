@@ -650,6 +650,29 @@ else
 fi
 
 
+# Markdown extensions
+declare md_ext=""
+md_ext+=" -f markdown+alerts "
+md_ext+=" -f markdown+blank_before_blockquote "
+md_ext+=" -f markdown+blank_before_header "
+md_ext+=" -f markdown+escaped_line_breaks "
+md_ext+=" -f markdown+fancy_lists "
+md_ext+=" -f markdown+fenced_code_blocks "
+md_ext+=" -f markdown+footnotes "
+md_ext+=" -f markdown+grid_tables "
+md_ext+=" -f markdown+header_attributes "
+md_ext+=" -f markdown+implicit_figures "
+md_ext+=" -f markdown+inline_code_attributes "
+md_ext+=" -f markdown+multiline_tables "
+md_ext+=" -f markdown+line_blocks "
+md_ext+=" -f markdown+link_attributes "
+md_ext+=" -f markdown+pipe_tables "
+md_ext+=" -f markdown+raw_attribute "
+md_ext+=" -f markdown+raw_tex "
+md_ext+=" -f markdown+space_in_atx_header "
+md_ext+=" -f markdown+table_captions "
+
+
 
 # Pre-process frontmatter markdown files
 v_pp_fm_files=()
@@ -674,21 +697,7 @@ else
             ${output_papersize}                         \
             ${output_font_size}                         \
             ${output_show_frame}                        \
-            -f markdown+blank_before_blockquote         \
-            -f markdown+blank_before_header             \
-            -f markdown+escaped_line_breaks             \
-            -f markdown+fancy_lists                     \
-            -f markdown+fenced_code_blocks              \
-            -f markdown+footnotes                       \
-            -f markdown+header_attributes               \
-            -f markdown+implicit_figures                \
-            -f markdown+implicit_header_references      \
-            -f markdown+inline_code_attributes          \
-            -f markdown+line_blocks                     \
-            -f markdown+link_attributes                 \
-            -f markdown+raw_attribute                   \
-            -f markdown+raw_tex                         \
-            -f markdown+space_in_atx_header             \
+            ${md_ext}                                   \
             --to=latex                                  \
             --pdf-engine=${arg_pdf_engine}              \
             --markdown-headings=atx                     \
@@ -722,20 +731,7 @@ else
             ${output_papersize}                         \
             ${output_font_size}                         \
             ${output_show_frame}                        \
-            -f markdown+blank_before_blockquote         \
-            -f markdown+blank_before_header             \
-            -f markdown+escaped_line_breaks             \
-            -f markdown+fancy_lists                     \
-            -f markdown+fenced_code_blocks              \
-            -f markdown+footnotes                       \
-            -f markdown+header_attributes               \
-            -f markdown+implicit_figures                \
-            -f markdown+inline_code_attributes          \
-            -f markdown+line_blocks                     \
-            -f markdown+link_attributes                 \
-            -f markdown+raw_attribute                   \
-            -f markdown+raw_tex                         \
-            -f markdown+space_in_atx_header             \
+            ${md_ext}                                   \
             --to=latex                                  \
             --pdf-engine=${arg_pdf_engine}              \
             --markdown-headings=atx                     \
@@ -798,24 +794,7 @@ if [ ${flag_latex_output} -eq 1 ]; then
         ${output_toc_depth}                             \
         ${output_lot_page}                              \
         ${output_lof_page}                              \
-        -f markdown+blank_before_blockquote             \
-        -f markdown+blank_before_header                 \
-        -f markdown+escaped_line_breaks                 \
-        -f markdown+fancy_lists                         \
-        -f markdown+fenced_code_blocks                  \
-        -f markdown+footnotes                           \
-        -f markdown+grid_tables                         \
-        -f markdown+header_attributes                   \
-        -f markdown+implicit_figures                    \
-        -f markdown+inline_code_attributes              \
-        -f markdown+line_blocks                         \
-        -f markdown+link_attributes                     \
-        -f markdown+multiline_tables                    \
-        -f markdown+pipe_tables                         \
-        -f markdown+raw_attribute                       \
-        -f markdown+raw_tex                             \
-        -f markdown+space_in_atx_header                 \
-        -f markdown+table_captions                      \
+        ${md_ext}                                       \
         --standalone                                    \
         --to=latex                                      \
         --pdf-engine=${arg_pdf_engine}                  \
@@ -867,24 +846,7 @@ if [ ${flag_latex_only_output} -eq 0 ]; then
         ${output_toc_depth}                             \
         ${output_lot_page}                              \
         ${output_lof_page}                              \
-        -f markdown+blank_before_blockquote             \
-        -f markdown+blank_before_header                 \
-        -f markdown+escaped_line_breaks                 \
-        -f markdown+fancy_lists                         \
-        -f markdown+fenced_code_blocks                  \
-        -f markdown+footnotes                           \
-        -f markdown+grid_tables                         \
-        -f markdown+header_attributes                   \
-        -f markdown+implicit_figures                    \
-        -f markdown+inline_code_attributes              \
-        -f markdown+multiline_tables                    \
-        -f markdown+line_blocks                         \
-        -f markdown+link_attributes                     \
-        -f markdown+pipe_tables                         \
-        -f markdown+raw_attribute                       \
-        -f markdown+raw_tex                             \
-        -f markdown+space_in_atx_header                 \
-        -f markdown+table_captions                      \
+        ${md_ext}                                       \
         --standalone                                    \
         --to=latex                                      \
         --output=${v_output_file}                       \
