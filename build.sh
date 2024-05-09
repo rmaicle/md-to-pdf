@@ -10,7 +10,7 @@ set -o errexit -o pipefail -o noclobber -o nounset
 
 
 declare -r HOME_DIR="$(eval echo ~${USER})"
-declare -r SCRIPTNAME=${0##*/}
+declare -r SCRIPT_NAME=${0##*/}
 declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 declare -r CURRENT_DIR=$(pwd)
 
@@ -120,7 +120,7 @@ Converts the contents of markdown input file (${DEFAULT_MARKDOWN_CONTENT_FILE}) 
 image input file (${DEFAULT_IMAGE_CONTENT_FILE}) using TeX/LaTex template file to PDF format.
 
 Usage:
-  ${SCRIPTNAME} [option...]
+  ${SCRIPT_NAME} [option...]
 
 Options:
   --above-title-rule  offset the title rule display; this is the height above
@@ -258,7 +258,7 @@ OPTIONS_LONG+=",use-latest"
 OPTIONS_TEMP=$(getopt               \
     --options ${OPTIONS_SHORT}      \
     --longoptions ${OPTIONS_LONG}   \
-    --name "${SCRIPTNAME}" -- "$@")
+    --name "${SCRIPT_NAME}" -- "$@")
 # Append unrecognized arguments after --
 eval set -- "${OPTIONS_TEMP}"
 
