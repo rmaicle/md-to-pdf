@@ -24,7 +24,7 @@ declare -r PROGRAM_DEFAULT="pandoc"
 declare -r PROGRAM_ALT="pandoc-latest"
 declare PROGRAM="${PROGRAM_DEFAULT}"
 declare -r PANDA_LUA="/usr/local/bin/panda.lua"
-declare -r HEADER="Script for converting markdown files to PDF.
+declare -r HEADER="Convert markdown files to PDF using Pandoc.
 Copyright (C) 2019-2022 Ricardo Maicle"
 
 
