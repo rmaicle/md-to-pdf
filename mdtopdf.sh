@@ -348,6 +348,23 @@ while true; do
 done
 
 
+# Show reminder only for versions 3.2.1 and up.
+declare v_pandoc_version="$(${PROGRAM} --version | head -n 1 | cut -d' ' -f2)"
+if [ "${v_pandoc_version}" =~ "^3.2.[1-9]" ] || [ "${v_pandoc_version}" =~ "^3.[3-9]" ]; then
+cat << EOF
+
+Pandoc 3.2.1 Reminder
+When using custom LaTeX template, be sure to copy \pandocbounded macro
+from the LaTeX default template. Create the LaTeX default template by
+running the command 'pandoc -D latex > default-template-latex.tex' and
+open the file 'default-template-latex.tex' and find the \pandocbounded
+macro and copy it to the custom LaTeX template.
+
+EOF
+read -p "Press key to continue.. " -n1 -s
+fi
+
+
 
 cat << EOF
 ${HEADER}
