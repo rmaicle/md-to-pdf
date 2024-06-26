@@ -62,7 +62,8 @@ declare -a -r PDF_ENGINES=(
 declare -r PAPER_A4="a4"
 declare -r PAPER_USLETTER="usletter"
 
-declare -r DEFAULT_PAPER_SIZE="${PAPER_A4}"
+# declare -r DEFAULT_PAPER_SIZE="${PAPER_A4}"
+declare -r DEFAULT_PAPER_SIZE=""
 
 declare -a -r PAPER_SIZES=(
     ${PAPER_A4}
@@ -434,6 +435,11 @@ fi
 
 
 
+declare v_display_paper_size="unspecified"
+if [[ -n "${arg_paper_size}" ]]; then
+    v_display_paper_size="${PANDOC_PAPER_SIZES[${arg_paper_size}]}"
+fi
+
 cat << EOF
 Current directory: ${CURRENT_DIR}
 Input directory: ${v_input_dir}
@@ -446,7 +452,7 @@ Output LaTeX file: ${v_output_latex_file}
 Output PDF file: ${v_output_file%.*}
 PDF Engine: ${arg_pdf_engine}
 
-Paper size: ${PANDOC_PAPER_SIZES[${arg_paper_size}]}
+Paper size: ${v_display_paper_size}
 Font size: ${arg_font_size}
 ToC Depth: ${arg_toc_depth}
 
@@ -473,7 +479,10 @@ declare output_lot_page=""
 declare output_show_frame=""
 declare output_toc_page=""
 declare output_font_size="--metadata=fontsize:${arg_font_size}"
-declare output_papersize="--metadata=papersize:${PANDOC_PAPER_SIZES[${arg_paper_size}]}"
+declare output_papersize=""
+if [[ -n "${arg_paper_size}" ]]; then
+    output_papersize="--metadata=papersize:${PANDOC_PAPER_SIZES[${arg_paper_size}]}"
+fi
 declare output_toc_depth="--toc-depth=${arg_toc_depth}"
 
 [ ${flag_draft} -eq 0 ] && output_draft="--metadata=is_draft:false"
