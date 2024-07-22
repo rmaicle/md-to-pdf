@@ -511,7 +511,10 @@ if [[ -n "${arg_paper_size}" ]]; then
 fi
 declare output_toc_depth="--toc-depth=${arg_toc_depth}"
 
-[ ${flag_draft} -eq 0 ] && output_draft="--metadata=is_draft:false"
+if [ ${flag_draft} -lt 2 ]; then
+    [ ${flag_draft} -eq 1 ] && output_draft="--metadata=is_draft:true"
+    [ ${flag_draft} -eq 0 ] && output_draft="--metadata=is_draft:false"
+fi
 [ ${flag_no_copyright} -eq 0 ] && output_copyright_page="--metadata=with_copyright:true"
 [ ${flag_no_lof} -eq 0 ] && output_lof_page="--metadata=lof:true"
 [ ${flag_no_lot} -eq 0 ] && output_lot_page="--metadata=lot:true"
