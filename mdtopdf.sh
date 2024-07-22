@@ -214,7 +214,10 @@ declare arg_output_file="${DEFAULT_OUTPUT_FILE}"
 
 
 
-declare flag_draft=0
+# We set the default for the draft flag to be 2. This prohibits
+# the code from setting the value to either true or false depending on
+# whether the --draft option is passed or not.
+declare flag_draft=2
 declare flag_show_frame=0
 declare flag_latex_output=0
 declare flag_latex_only_output=0
