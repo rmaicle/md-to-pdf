@@ -537,7 +537,12 @@ else
         # Skip empty lines
         [[ -z "${file}" ]] && continue
         # Skip entries prefixed with the skip marker
-        if [[ "${file}" == "${DEFAULT_SKIP_FILE_MARKER_ONLY}" ]]; then
+        # NOTE: No space around ==; adding a space before and after
+        #       the double equal sign seem to evaluate the expression
+        #       as a false when $file contains only "x".
+        #       I am still not sure why this is (20250104)
+        if [[ "${file}"=="${DEFAULT_SKIP_FILE_MARKER_ONLY}" ]]; then
+            v_skip_count=$((${v_skip_count} + 1))
             continue
         fi
         if [[ "${file:0:2}" == "${DEFAULT_SKIP_FILE_MARKER}" ]]; then
