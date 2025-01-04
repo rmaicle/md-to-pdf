@@ -97,7 +97,7 @@ declare -r DEFAULT_TOC_DEPTH="2"
 declare -r DEFAULT_SKIP_FILE_MARKER_ONLY="x"
 # When the line is prefixed with a skip file marker and a whitespace
 # before the filename
-declare -r DEFAULT_SKIP_FILE_MARKER="x "
+declare -r DEFAULT_SKIP_FILE_MARKER="${DEFAULT_SKIP_FILE_MARKER_ONLY} "
 declare -r DEFAULT_PREPROCESSOR_FILE_MARKER="pp-"
 
 
