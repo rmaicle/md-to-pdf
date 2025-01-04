@@ -693,6 +693,21 @@ else
 fi
 
 
+
+# PDF engine and options
+declare v_param_pdf_engine=" --pdf-engine=${arg_pdf_engine} "
+declare v_param_pdf_engine_opt=""
+
+# if [[ "${arg_pdf_engine}" = "${DEFAULT_PDF_ENGINE}" ]]; then
+if [[ "${arg_pdf_engine}" = "${ALTERNATIVE_PDF_ENGINE}" ]]; then
+    # 3.1.1. Limitations using XeLATEX (pdfx 1.6.5f)
+    v_param_pdf_engine_opt+=" "
+    v_param_pdf_engine_opt+="--pdf-engine-opt=-shell-escape "
+    v_param_pdf_engine_opt+="--pdf-engine-opt=-output-driver='xdvipdfmx -z 0' "
+fi
+
+
+
 # Markdown extensions
 declare md_ext=""
 md_ext+=" -f markdown+alerts "
@@ -742,7 +757,9 @@ else
             ${output_show_frame}                        \
             ${md_ext}                                   \
             --to=latex                                  \
-            --pdf-engine=${arg_pdf_engine}              \
+            ${v_param_pdf_engine}                       \
+            ${v_param_pdf_engine_opt}                   \
+            --dpi=300                                   \
             --markdown-headings=atx                     \
             --top-level-division=chapter                \
             --listings                                  \
@@ -776,7 +793,9 @@ else
             ${output_show_frame}                        \
             ${md_ext}                                   \
             --to=latex                                  \
-            --pdf-engine=${arg_pdf_engine}              \
+            ${v_param_pdf_engine}                       \
+            ${v_param_pdf_engine_opt}                   \
+            --dpi=300                                   \
             --markdown-headings=atx                     \
             --top-level-division=chapter                \
             --listings                                  \
@@ -840,7 +859,9 @@ if [ ${flag_latex_output} -eq 1 ]; then
         ${md_ext}                                       \
         --standalone                                    \
         --to=latex                                      \
-        --pdf-engine=${arg_pdf_engine}                  \
+        ${v_param_pdf_engine}                           \
+        ${v_param_pdf_engine_opt}                       \
+        --dpi=300                                       \
         --markdown-headings=atx                         \
         --top-level-division=chapter                    \
         --listings                                      \
@@ -893,8 +914,10 @@ if [ ${flag_latex_only_output} -eq 0 ]; then
         --standalone                                    \
         --to=latex                                      \
         --output=${v_output_file}                       \
-        --pdf-engine=${arg_pdf_engine}                  \
+        ${v_param_pdf_engine}                           \
+        ${v_param_pdf_engine_opt}                       \
         --markdown-headings=atx                         \
+        --dpi=300                                       \
         --top-level-division=chapter                    \
         --number-sections                               \
         --listings
