@@ -60,6 +60,7 @@ declare -a -r PDF_ENGINES=(
 
 # Paper arguments to script
 declare -r PAPER_A4="a4"
+declare -r PAPER_A5="a5"
 declare -r PAPER_USLETTER="usletter"
 
 # declare -r DEFAULT_PAPER_SIZE="${PAPER_A4}"
@@ -67,13 +68,15 @@ declare -r DEFAULT_PAPER_SIZE=""
 
 declare -a -r PAPER_SIZES=(
     ${PAPER_A4}
+    ${PAPER_A5}
     ${PAPER_USLETTER}
 )
 
 # Values passed to pandoc
 declare -A -r PANDOC_PAPER_SIZES=(
-    [${PAPER_A4}]="a4paper"
-    [${PAPER_USLETTER}]="letterpaper"
+    [${PAPER_A4}]="a4"
+    [${PAPER_A5}]="a5"
+    [${PAPER_USLETTER}]="letter"
 )
 
 declare -r DEFAULT_FONT_SIZE="10"
@@ -152,7 +155,7 @@ $(printf '                        %s point\n' ${FONT_SIZES[@]})
   --od dir            output directory; default is current directory
   --of file           output filename appended with '.pdf'; the default output
                       filename is 'output'
-  --paper             paper size; default is ${DEFAULT_PAPER_SIZE}
+  --paper size        default is ${DEFAULT_PAPER_SIZE}
 $(printf '                        %s\n' ${PAPER_SIZES[@]})
   --softcopy          generate E-book format PDF document
   --show-frame        show page margins
