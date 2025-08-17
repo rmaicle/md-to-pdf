@@ -470,7 +470,7 @@ cat << EOF
 Current directory: ${CURRENT_DIR}
 Input directory: ${v_input_dir}
 Input markdown file: $(basename ${arg_markdown_file})
-Input image file: ${arg_image_file}
+Input image file: $(basename ${arg_image_file})
 Template directory: $(dirname ${arg_template_file})
 Template file: $(basename ${arg_template_file})
 Output directory: ${arg_output_dir}
