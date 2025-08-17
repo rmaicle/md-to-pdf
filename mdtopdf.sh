@@ -464,10 +464,7 @@ fi
 
 
 
-declare v_display_paper_size="unspecified"
-if [[ -n "${arg_paper_size}" ]]; then
-    v_display_paper_size="${PANDOC_PAPER_SIZES[${arg_paper_size}]}"
-fi
+declare v_display_paper_size="${PANDOC_PAPER_SIZES[${arg_paper_size}]}"
 
 cat << EOF
 Current directory: ${CURRENT_DIR}
