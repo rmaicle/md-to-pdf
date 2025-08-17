@@ -523,14 +523,15 @@ fi
 
 
 
-# Process image content file
+# Pre-process image content file
+# Get image filenames
+v_skip_count=0
+v_found_count=0
+v_tex_files=()
+v_temp_tex_files=()
 if [ ${flag_no_images} -eq 1 ]; then
     echo "Skipping image content file preprocessing."
 else
-    v_skip_count=0
-    v_found_count=0
-    v_tex_files=()
-    v_temp_tex_files=()
     echo "Checking existence of TeX files:"
     readarray -t v_temp_tex_files <"${arg_image_file}"
     for file in "${v_temp_tex_files[@]}"; do
