@@ -564,7 +564,8 @@ fi
 
 
 
-# Process markdown content file
+# Pre-process markdown content file
+# Get markdown filenames
 v_skip_count=0
 v_found_count=0
 v_base_filename=""
@@ -633,7 +634,7 @@ pushd "${v_input_dir}"
 
 
 
-# Pre-process TeX files
+# Process TeX files (image filenames)
 if [ ${flag_no_images} -eq 1 ]; then
     echo "Skipping preprocessing of TeX files."
 else
@@ -732,7 +733,7 @@ md_ext+=" -f markdown+table_captions "
 
 
 
-# Pre-process frontmatter markdown files
+# Process frontmatter markdown files
 v_pp_fm_files=()
 v_include_front_matter=""
 v_base_filename_tex=""
@@ -769,7 +770,7 @@ fi
 
 
 
-# Pre-process backmatter markdown files
+# Process backmatter markdown files
 v_pp_bm_files=()
 v_include_back_matter=""
 if [ ${flag_no_backmatter} -eq 1 ]; then
