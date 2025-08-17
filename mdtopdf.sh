@@ -541,7 +541,7 @@ else
         #       the double equal sign seem to evaluate the expression
         #       as a false when $file contains only "x".
         #       I am still not sure why this is (20250104)
-        if [[ "${file}"=="${DEFAULT_SKIP_FILE_MARKER_ONLY}" ]]; then
+        if [[ "${file}" == "${DEFAULT_SKIP_FILE_MARKER_ONLY}" ]]; then
             v_skip_count=$((${v_skip_count} + 1))
             continue
         fi
