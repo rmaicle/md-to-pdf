@@ -117,6 +117,33 @@ function to_lowercase() {
     echo "$(echo ${1} | tr 'A-Z' 'a-z')"
 }
 
+
+# Show reminder only for versions 3.2.1 and up.
+declare v_pandoc_version="$(${PROGRAM} --version | head -n 1 | cut -d' ' -f2)"
+# Version 3.2.1 to 3.2.9 assuming the patch version number (Semantic
+# Versioning 2.0) does not exceed 9.
+declare -r VERSION_321="^3.2.[1-9]"
+# Version 3.3 to 3.9 assuming the minor version number (Semantic
+# Versioning 2.0) does not exceed 9.
+declare -r VERSION_33="^3.[3-9]"
+if [[ "${v_pandoc_version}" =~ $VERSION_321 ]] || [[ "${v_pandoc_version}" =~ $VERSION_33 ]]; then
+cat << EOF
+
+****************************************************************************
+*  Pandoc 3.2.1 Reminder                                                   *
+*  When using custom LaTeX template, be sure to copy \pandocbounded macro  *
+*  from the LaTeX default template.                                        *
+*  - Create the LaTeX default template.                                    *
+*    Run 'pandoc -D latex > default-template-latex.tex'                    *
+*  - Copy the '\pandocbounded' macro to the custom LaTeX template.         *
+****************************************************************************
+
+EOF
+read -p $"Press key to continue... " -n1 -s
+fi
+
+
+
 #
 # Help text
 #
@@ -359,27 +386,7 @@ while true; do
 done
 
 
-# Show reminder only for versions 3.2.1 and up.
-declare v_pandoc_version="$(${PROGRAM} --version | head -n 1 | cut -d' ' -f2)"
-# Version 3.2.1 to 3.2.9 assuming the patch version number (Semantic
-# Versioning 2.0) does not exceed 9.
-declare -r VERSION_321="^3.2.[1-9]"
-# Version 3.3 to 3.9 assuming the minor version number (Semantic
-# Versioning 2.0) does not exceed 9.
-declare -r VERSION_33="^3.[3-9]"
-if [[ "${v_pandoc_version}" =~ $VERSION_321 ]] || [[ "${v_pandoc_version}" =~ $VERSION_33 ]]; then
-cat << EOF
 
-Pandoc 3.2.1 Reminder
-When using custom LaTeX template, be sure to copy \pandocbounded macro
-from the LaTeX default template.
-- Create the LaTeX default template.
-  Run 'pandoc -D latex > default-template-latex.tex'
-- Copy the '\pandocbounded' macro to the custom LaTeX template.
-
-EOF
-read -p "Press key to continue.. " -n1 -s
-fi
 
 
 
