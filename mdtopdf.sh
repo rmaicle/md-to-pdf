@@ -83,6 +83,9 @@ declare -a -r PAPER_SIZES=(
 
 declare -r DEFAULT_FONT_SIZE="10"
 declare -a -r FONT_SIZES=(
+    "6"
+    "7"
+    "8"
     "9"
     "${DEFAULT_FONT_SIZE}"
     "11"
