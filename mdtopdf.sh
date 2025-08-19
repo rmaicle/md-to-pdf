@@ -61,23 +61,25 @@ declare -a -r PDF_ENGINES=(
 # Paper arguments to script
 declare -r PAPER_A4="a4"
 declare -r PAPER_A5="a5"
-declare -r PAPER_USLETTER="usletter"
+declare -r PAPER_B5="b5"
+declare -r PAPER_LETTER="letter"
 
-# declare -r DEFAULT_PAPER_SIZE="${PAPER_A4}"
-declare -r DEFAULT_PAPER_SIZE=""
+declare -r DEFAULT_PAPER_SIZE="${PAPER_A4}"
 
 declare -a -r PAPER_SIZES=(
     ${PAPER_A4}
     ${PAPER_A5}
-    ${PAPER_USLETTER}
+    ${PAPER_B5}
+    ${PAPER_LETTER}
 )
 
 # Values passed to pandoc
-declare -A -r PANDOC_PAPER_SIZES=(
-    [${PAPER_A4}]="a4"
-    [${PAPER_A5}]="a5"
-    [${PAPER_USLETTER}]="letter"
-)
+# declare -A -r PANDOC_PAPER_SIZES=(
+#     [${PAPER_A4}]="${PAPER_A4}"
+#     [${PAPER_A5}]="${PAPER_A5}"
+#     [${PAPER_B5}]="${PAPER_B5}"
+#     [${PAPER_LETTER}]="${PAPER_LETTER}"
+# )
 
 declare -r DEFAULT_FONT_SIZE="10"
 declare -a -r FONT_SIZES=(
@@ -257,7 +259,7 @@ OPTIONS_LONG+=",no-lot"
 OPTIONS_LONG+=",no-toc"
 OPTIONS_LONG+=",od:"
 OPTIONS_LONG+=",of:"
-OPTIONS_LONG+=",paper:"
+OPTIONS_LONG+=",paper-size:"
 OPTIONS_LONG+=",show-frame"
 OPTIONS_LONG+=",template:"
 OPTIONS_LONG+=",toc-depth:"
@@ -331,7 +333,7 @@ while true; do
                             popd
                             ;;
         --of)               arg_output_file="${2}" ; shift 2 ;;
-        --paper)            arg_paper_size="${2,,}"
+        --paper-size)       arg_paper_size="${2,,}"
                             shift 2
                             if [[ ! "${PAPER_SIZES[@]}" =~ "${arg_paper_size}" ]]; then
                                 echo_error "Unrecognized paper size: ${arg_paper_size}\nAborting."
@@ -379,6 +381,8 @@ fi
 
 
 cat << EOF
+
+
 ${HEADER}
 
 EOF
@@ -464,8 +468,6 @@ fi
 
 
 
-declare v_display_paper_size="${PANDOC_PAPER_SIZES[${arg_paper_size}]}"
-
 cat << EOF
 Current directory: ${CURRENT_DIR}
 Input directory: ${v_input_dir}
@@ -478,7 +480,7 @@ Output LaTeX file: ${v_output_latex_file}
 Output PDF file: ${v_output_file%.*}
 PDF Engine: ${arg_pdf_engine}
 
-Paper size: ${v_display_paper_size}
+Paper size: ${arg_paper_size}
 Font size: ${arg_font_size}
 ToC Depth: ${arg_toc_depth}
 
@@ -507,7 +509,7 @@ declare output_toc_page=""
 declare output_font_size="--metadata=fontsize:${arg_font_size}"
 declare output_papersize=""
 if [[ -n "${arg_paper_size}" ]]; then
-    output_papersize="--metadata=papersize:${PANDOC_PAPER_SIZES[${arg_paper_size}]}"
+    output_papersize="--metadata=papersize:${arg_paper_size}"
 fi
 declare output_toc_depth="--toc-depth=${arg_toc_depth}"
 
