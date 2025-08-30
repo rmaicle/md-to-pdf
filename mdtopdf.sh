@@ -531,7 +531,7 @@ fi
 [ ${flag_no_lof} -eq 0 ] && output_lof_page="--metadata=lof:true"
 [ ${flag_no_lot} -eq 0 ] && output_lot_page="--metadata=lot:true"
 [ ${flag_no_toc} -eq 0 ] && output_toc_page="--table-of-contents"
-[ ${flag_show_frame} -eq 0 ] && output_show_frame="--metadata=showframe:false"
+[ ${flag_show_frame} -gt 0 ] && output_show_frame="--metadata=showframe:true"
 
 
 
