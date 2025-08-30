@@ -625,11 +625,17 @@ for file in "${v_temp_source_files[@]}"; do
     v_found_count=$((${v_found_count} + 1))
     # Compare first 5 characters of the filename and determine
     # if it is a frontmatter or backmatter file.
-    if [[ "${v_base_filename:0:5}" =~ ^fm_[a-z]_$ ]]; then
+    #   00_1_fm_a_preface.md
+    #   00_2_fm_a_preface.md
+    #   00_3_fm_a_preface.md
+    #   00_1_bm_a_file_1.md
+    #   00_2_bm_a_file_1.md
+    #   00_3_bm_a_file_1.md
+    if [[ "${v_base_filename:5:5}" =~ ^fm_[a-z]_$ ]]; then
         if [ ${flag_no_frontmatter} -eq 0 ]; then
             v_source_fm_files+=("${v_input_dir}/${file}")
         fi
-    elif [[ "${v_base_filename:0:5}" =~ ^bm_[a-z]_$ ]]; then
+    elif [[ "${v_base_filename:5:5}" =~ ^bm_[a-z]_$ ]]; then
         if [ ${flag_no_backmatter} -eq 0 ]; then
             v_source_bm_files+=("${v_input_dir}/${file}")
         fi
