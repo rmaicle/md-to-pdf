@@ -249,10 +249,10 @@ declare arg_output_file="${DEFAULT_OUTPUT_FILE}"
 
 
 
-# We set the default for the draft flag to be 2. This prohibits
+# We set the default for the draft flag to be 3. This prohibits
 # the code from setting the value to either true or false depending on
 # whether the --draft option is passed or not.
-declare flag_draft=2
+declare flag_draft=3
 declare flag_show_frame=0
 declare flag_latex_output=0
 declare flag_latex_only_output=0
@@ -280,6 +280,7 @@ OPTIONS_LONG+=",image:"
 OPTIONS_LONG+=",latex"
 OPTIONS_LONG+=",latex-only"
 OPTIONS_LONG+=",markdown:"
+OPTIONS_LONG+=",ms"
 OPTIONS_LONG+=",no-backmatter"
 OPTIONS_LONG+=",no-copyright"
 OPTIONS_LONG+=",no-frontmatter"
@@ -307,6 +308,7 @@ while true; do
     case "${1}" in
         --debug)            flag_debug_mode=1 ; shift 2 ;;
         --draft)            flag_draft=1 ; shift ;;
+        --ms)               flag_draft=2 ; shift ;;
         --engine)           arg_pdf_engine="${2,,}"
                             if [[ ! "${PDF_ENGINES[@]}" =~ "${arg_pdf_engine}" ]]; then
                                 echo_error "Unrecognized PDF engine: ${arg_pdf_engine}\nAborting."
@@ -523,9 +525,10 @@ if [[ -n "${arg_paper_size}" ]]; then
 fi
 declare output_toc_depth="--toc-depth=${arg_toc_depth}"
 
-if [ ${flag_draft} -lt 2 ]; then
-    [ ${flag_draft} -eq 1 ] && output_draft="--metadata=is_draft:true"
-    [ ${flag_draft} -eq 0 ] && output_draft="--metadata=is_draft:false"
+if [ ${flag_draft} -lt 3 ]; then
+    [ ${flag_draft} -eq 1 ] && output_draft="--metadata=is_draft=true"
+    [ ${flag_draft} -eq 2 ] && output_draft="--metadata=is_ms=true"
+    # [ ${flag_draft} -eq 0 ] && output_draft="--metadata=is_draft=false"
 fi
 [ ${flag_no_copyright} -eq 0 ] && output_copyright_page="--metadata=with_copyright:true"
 [ ${flag_no_lof} -eq 0 ] && output_lof_page="--metadata=lof:true"
