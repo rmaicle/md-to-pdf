@@ -50,12 +50,18 @@ declare -r DEFAULT_MARKDOWN_CONTENT_FILE="markdownlist.txt"
 declare -r DEFAULT_IMAGE_CONTENT_FILE="imagelist.txt"
 
 # Engine: [pdflatex | xelatex | lualatex]
-declare -r DEFAULT_PDF_ENGINE="pdflatex"
-declare -r ALTERNATIVE_PDF_ENGINE="xelatex"
+
+declare -r PDFLATEX_ENGINE="pdflatex"
+declare -r LUALATEX_ENGINE="lualatex"
+declare -r LATEXMK_ENGINE="latexmk" # using TinyTex
+declare -r XELATEX_ENGINE="xelatex"
+declare -r DEFAULT_PDF_ENGINE="${PDFLATEX_ENGINE}"
 
 declare -a -r PDF_ENGINES=(
     "${DEFAULT_PDF_ENGINE}"
-    "${ALTERNATIVE_PDF_ENGINE}"
+    "${LUALATEX_ENGINE}"
+    "${LATEXMK_ENGINE}"
+    "${XELATEX_ENGINE}"
 )
 
 # Paper arguments to script
@@ -671,10 +677,17 @@ else
         v_tex_file_dir=$(dirname ${file})
         pushd ${v_tex_file_dir}
         # Argument -draftmode tells pdflatex not to generate PDF file.
-        pdflatex                                        \
-            -shell-escape                               \
-            -draftmode                                  \
-            "${file}"
+        if [[ "${arg_pdf_engine}" = "${DEFAULT_PDF_ENGINE}" ]]; then
+            pdflatex                                        \
+                -shell-escape                               \
+                -draftmode                                  \
+                "${file}"
+        else
+            lualatex                                        \
+                -shell-escape                               \
+                -draftmode                                  \
+                "${file}"
+        fi
         # WORKAROUND: [pdfTeX 3.14159265-2.6-1.40.20]
         #
         # There seems to be a bug in -output-directory option.
@@ -722,11 +735,15 @@ declare v_param_pdf_engine=" --pdf-engine=${arg_pdf_engine} "
 declare v_param_pdf_engine_opt=""
 
 # if [[ "${arg_pdf_engine}" = "${DEFAULT_PDF_ENGINE}" ]]; then
-if [[ "${arg_pdf_engine}" = "${ALTERNATIVE_PDF_ENGINE}" ]]; then
+if [[ "${arg_pdf_engine}" = "${XELATEX_ENGINE}" ]]; then
     # 3.1.1. Limitations using XeLATEX (pdfx 1.6.5f)
     v_param_pdf_engine_opt+=" "
     v_param_pdf_engine_opt+="--pdf-engine-opt=-shell-escape "
     v_param_pdf_engine_opt+="--pdf-engine-opt=-output-driver='xdvipdfmx -z 0' "
+fi
+if [[ "${arg_pdf_engine}" = "${LATEXMK_ENGINE}" ]]; then
+    v_param_pdf_engine_opt+=" "
+    v_param_pdf_engine_opt+="--pdf-engine-opt=-lualatex"
 fi
 
 
