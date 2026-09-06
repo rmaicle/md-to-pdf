@@ -785,7 +785,7 @@ else
             --dpi=300                                   \
             --markdown-headings=atx                     \
             --top-level-division=chapter                \
-            --listings                                  \
+            --syntax-highlighting=idiomatic             \
             > "${v_base_filename_tex}"
     done
 fi
@@ -821,7 +821,7 @@ else
             --dpi=300                                   \
             --markdown-headings=atx                     \
             --top-level-division=chapter                \
-            --listings                                  \
+            --syntax-highlighting=idiomatic             \
             > "${v_base_filename_tex}"
     done
 fi
@@ -887,7 +887,7 @@ if [ ${flag_latex_output} -eq 1 ]; then
         --dpi=300                                       \
         --markdown-headings=atx                         \
         --top-level-division=chapter                    \
-        --listings                                      \
+        --syntax-highlighting=idiomatic                 \
         > "${v_output_latex_file}"
 
     echo -e "\nEnd of Tex/LaTeX file.\n"
@@ -943,7 +943,7 @@ if [ ${flag_latex_only_output} -eq 0 ]; then
         --dpi=300                                       \
         --top-level-division=chapter                    \
         --number-sections                               \
-        --listings
+        --syntax-highlighting=idiomatic
 
     if [ -f "${v_output_file}" ]; then
         if [[ ! "$(pwd)" == "${arg_output_dir}" ]]; then
